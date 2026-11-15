@@ -1,0 +1,1248 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ambulance Services WMS – Wireframe Prototype</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font:14px/1.45 -apple-system,"Segoe UI",Helvetica,Arial,sans-serif;color:#111;background:#ececec}
+body.drawer-open{padding-right:410px}
+h1{font-size:20px;margin:0 0 2px}
+h2{font-size:16px;margin:0 0 8px}
+h3{font-size:14px;margin:12px 0 6px}
+small,.sm{font-size:12px;color:#444}
+code{background:#eee;padding:0 4px;border:1px solid #ccc}
+a{color:#111}
+
+/* prototype-only controls */
+#protobar{background:#333;color:#fff;padding:6px 12px;display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;font-size:12px;position:sticky;top:0;z-index:30}
+#protobar .lbl{font-weight:700;letter-spacing:.05em;border:1px dashed #bbb;padding:2px 6px}
+#protobar button,#protobar select{font:inherit;padding:3px 8px;border:1px solid #999;background:#555;color:#fff;cursor:pointer;max-width:260px}
+#protobar button.on{background:#fff;color:#000}
+#protobar .sp{flex:1}
+body.shot #protobar,body.shot #drawer{display:none}
+body.shot{padding-right:0!important}
+
+/* system frame */
+#app{max-width:1280px;margin:12px auto;background:#fff;border:2px solid #222}
+#hdr{border-bottom:2px solid #222;padding:8px 14px;display:flex;flex-wrap:wrap;gap:6px 18px;align-items:center}
+#hdr .sys{font-weight:700}
+#hdr nav{display:flex;gap:4px;flex-wrap:wrap}
+#hdr nav a{padding:5px 10px;border:1px solid #222;text-decoration:none;background:#fff}
+#hdr nav a.on{background:#222;color:#fff}
+#hdr .who{margin-left:auto;font-size:12px;color:#333}
+#main{padding:14px}
+.phead{border-bottom:1px solid #999;padding-bottom:8px;margin-bottom:12px}
+.phead .meta{font-size:12px;color:#444}
+.tabs{display:flex;gap:4px;margin:0 0 12px}
+.tabs a{padding:5px 12px;border:1px solid #222;text-decoration:none;background:#fff}
+.tabs a.on{background:#222;color:#fff}
+
+.btn{font:inherit;padding:4px 10px;border:1px solid #222;background:#fff;cursor:pointer;margin:1px 2px 1px 0}
+.btn:hover{background:#eee}
+.btn.pri{background:#222;color:#fff}
+.btn.pri:hover{background:#000}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+select,input,textarea{font:inherit;padding:4px 6px;border:1px solid #222;background:#fff}
+textarea{width:100%;min-height:70px}
+
+.box{border:1px solid #222;padding:10px 12px;margin:0 0 12px;background:#fff}
+.box.dash{border-style:dashed;background:#fafafa}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 12px}
+.bar .sp{flex:1}
+
+table.t{border-collapse:collapse;width:100%}
+table.t th,table.t td{border:1px solid #777;padding:4px 7px;text-align:left;vertical-align:top}
+table.t th{background:#e6e6e6;font-weight:600}
+table.t tr.sel td{background:#f0f0f0;outline:2px solid #222;outline-offset:-2px}
+table.t tr.over td{background:#f6dede}
+table.t tr.muted td{color:#888}
+table.t tr.hi td{background:#eef3e6}
+.scroll{max-height:460px;overflow:auto;border:1px solid #777}
+.scroll table.t th{position:sticky;top:0;box-shadow:0 -1px 0 #777}
+table.kv td{padding:2px 10px 2px 0;vertical-align:top}
+table.kv td:first-child{color:#444;white-space:nowrap}
+
+.tag{display:inline-block;font-size:11px;font-weight:700;padding:0 6px;border:1px solid #222;background:#fff;white-space:nowrap}
+.tag.dark{background:#222;color:#fff}
+.tag.red{border-color:#a00;color:#a00}
+.tag.grey{border-color:#888;color:#666}
+.need{font-weight:700;color:#a00;border:1px dashed #a00;padding:0 5px;white-space:nowrap}
+.pend{font-weight:700;border:1px dashed #222;padding:0 5px;white-space:nowrap}
+
+.flash{border:1px solid #222;border-left-width:8px;padding:8px 10px;margin:0 0 12px;background:#f7f7f7}
+.flash.err,.flash.warn{border-color:#a00}
+.flash.err b:first-child,.flash.warn b:first-child{color:#a00}
+.note{border:1px solid #777;border-left-width:6px;padding:6px 10px;margin:0 0 10px;background:#fafafa}
+.note.red{border-color:#a00}
+
+/* roster grid */
+table.grid{border-collapse:collapse;width:100%;table-layout:fixed}
+table.grid th,table.grid td{border:1px solid #777;padding:2px;text-align:center;font-size:12px}
+table.grid th{background:#e6e6e6}
+.cell{font:inherit;font-size:12px;width:100%;min-height:50px;border:1px solid transparent;background:#fff;cursor:pointer;padding:3px}
+.cell:hover{background:#eee}
+.cell.sel{background:#222;color:#fff}
+.cell.sel small{color:#ddd}
+.cell.short{border:1px dashed #a00}
+.cell.short b{color:#a00}
+.cell.sel.short b{color:#fff}
+
+/* candidates */
+.cands{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.cand{border:1px solid #222;padding:8px}
+.cand h4{margin:0 0 4px;font-size:14px}
+table.av{border-collapse:collapse;font-size:11px;margin:2px 0}
+table.av th,table.av td{border:1px solid #999;padding:1px 4px;text-align:center}
+table.av td.y{background:#ddd;font-weight:700}
+table.av td.a{background:#222;color:#fff}
+table.av td.cur{outline:2px solid #a00;outline-offset:-2px}
+
+/* forms */
+.form{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:8px 14px}
+.fld span.l{display:block;font-size:12px;color:#333;margin-bottom:2px}
+.fld input:not([type=checkbox]):not([type=radio]),.fld select{width:100%}
+.fld.bad input,.fld.bad select,.fld.bad .cks{border:2px solid #a00}
+.fld em{display:block;color:#a00;font-size:12px;font-style:normal;font-weight:700}
+.cks{padding:4px;border:1px solid transparent}
+.ck{display:inline-block;margin-right:12px;white-space:nowrap}
+
+/* staff */
+.card{border:1px solid #222;padding:10px;margin:0 0 10px}
+.card .top{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:6px}
+.wk{border:1px solid #222}
+.wk h3{margin:0;padding:5px 8px;background:#e6e6e6;border-bottom:1px solid #222}
+.wk table{width:100%;border-collapse:collapse}
+.wk td,.wk th{border-top:1px solid #bbb;padding:3px 8px;text-align:left;font-size:13px}
+.wk td:first-child{white-space:nowrap}
+.cal{border-collapse:collapse;width:100%;table-layout:fixed}
+.cal th,.cal td{border:1px solid #777;padding:3px;vertical-align:top;font-size:12px}
+.cal th{background:#e6e6e6}
+.cal td{height:74px}
+.cal td.out{background:#f1f1f1;color:#999}
+.cal .s{border:1px solid #222;padding:1px 3px;margin-top:2px;background:#eee;overflow-wrap:anywhere}
+.hbar{display:inline-block;height:10px;background:#555;vertical-align:middle}
+.hbar.o{background:#a00}
+
+/* drawer (prototype-only) */
+#drawer{display:none;position:fixed;top:0;right:0;bottom:0;width:400px;background:#fafafa;border-left:3px solid #222;z-index:40;overflow:auto;padding:10px 12px;font-size:12.5px}
+body.drawer-open #drawer{display:block}
+#drawer h2{font-size:14px}
+#drawer .uc{font-weight:700;margin:12px 0 3px;border-bottom:1px solid #222}
+#drawer .sc{border:1px solid #bbb;padding:5px 6px;margin:4px 0;background:#fff}
+#drawer .sc.on{border:2px solid #222}
+#drawer .sc .cap{margin-top:4px;padding:4px 6px;background:#eee}
+#drawer .msg{border:1px solid #999;padding:5px 6px;margin:5px 0;background:#fff}
+
+/* modal */
+#modal .ov{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:50;display:flex;align-items:flex-start;justify-content:center;padding:90px 12px}
+#modal .mbox{background:#fff;border:2px solid #222;max-width:540px;width:100%;padding:14px}
+#modal .mbox h2{border-bottom:1px solid #999;padding-bottom:6px}
+#modal .merr{color:#a00;font-weight:700;margin:6px 0}
+
+/* figure annotation (screenshots only): outlines what a scenario step produced */
+.hl{position:absolute;border:4px solid #ff6a00;border-radius:5px;box-shadow:0 0 0 3px rgba(255,196,0,.6);pointer-events:none;z-index:60}
+
+@media (max-width:760px){
+  .cands{grid-template-columns:1fr}
+  .cal th,.cal td{font-size:10px;padding:2px}
+  .cal .s{padding:1px}
+  #hdr .who{margin-left:0}
+  body.drawer-open{padding-right:0}
+  #drawer{width:100%}
+}
+</style>
+</head>
+<body>
+<div id="protobar"></div>
+<div id="app"><header id="hdr"></header><main id="main"></main></div>
+<aside id="drawer"></aside>
+<div id="modal"></div>
+
+<script>
+'use strict';
+/* =====================================================================
+   Ambulance Services Workload Management System – interactive wireframe
+   Pages = boundary classes of the class diagram:
+     UserAccountPage, StaffPlanningPage, RosterManagementPage,
+     ManagerDashboardPage, StaffRosterPage, MonthlyAssignmentView, FleetPage
+   Database, SMS Service and audit log are simulated in memory.
+   ===================================================================== */
+
+/* ---------- constants & assumptions ---------- */
+const CONFIG = {drivers:17, careAssistants:20, paramedics:36, ambulances:10};
+const NOW = new Date(2026,10,20,10,0);          // simulated "today": Fri 20 Nov 2026, 10:00
+const STATION = 'Central Station';              // single-station assumption
+const ROLES = {driver:'Driver', careAssistant:'Care Assistant', paramedic:'Paramedic'};
+const POS = ['driver','careAssistant','paramedic','paramedic'];
+const POSLBL = ['Driver','Care Assistant','Paramedic 1','Paramedic 2'];
+const HIST = ['2026-10-26','2026-11-02','2026-11-09'];
+const CUR = '2026-11-16';
+const PLAN = ['2026-11-23','2026-11-30','2026-12-07','2026-12-14','2026-12-21']; // five-week planning period
+const MGR = 'M2001';
+const DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const MIN_AMB = 6, MAX_HOURS = 40;
+
+/* ---------- helpers ---------- */
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const pad = n => String(n).padStart(2,'0');
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const parse = s => { const [y,m,d] = s.split('-').map(Number); return new Date(y,m-1,d); };
+const iso = d => d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const addDays = (s,n) => { const d = parse(s); d.setDate(d.getDate()+n); return iso(d); };
+const fmtD = s => { const d = parse(s); return DOW[d.getDay()]+' '+d.getDate()+' '+MON[d.getMonth()]; };
+const fmtShort = s => { const d = parse(s); return d.getDate()+' '+MON[d.getMonth()]; };
+const weekLbl = w => fmtShort(w)+' – '+fmtShort(addDays(w,6))+' '+parse(addDays(w,6)).getFullYear();
+const monthLbl = ym => MON[+ym.slice(5,7)-1]+' '+ym.slice(0,4);
+const dayNum = s => { const [y,m,d] = s.split('-').map(Number); return Math.round(Date.UTC(y,m-1,d)/864e5); };
+const sDate = sh => sh.slice(0,10), sType = sh => sh.slice(11);
+const gIdx = sh => dayNum(sDate(sh))*2 + (sType(sh)==='N'?1:0);
+const sStart = sh => { const d = parse(sDate(sh)); d.setHours(sType(sh)==='D'?7:19); return d; };
+const started = sh => sStart(sh) <= NOW;
+const sTimes = sh => sType(sh)==='D' ? '07:00–19:00' : '19:00–07:00';
+const sName = sh => sType(sh)==='D' ? 'Day' : 'Night';
+const sLbl = sh => fmtD(sDate(sh))+' · '+sName(sh)+' shift';
+const weekOf = sh => { const d = parse(sDate(sh)); return addDays(sDate(sh), -((d.getDay()+6)%7)); };
+const weekShifts = w => { const o=[]; for(let i=0;i<7;i++) o.push(addDays(w,i)+'|D', addDays(w,i)+'|N'); return o; };
+const sid = (w,day,t) => addDays(w,day)+'|'+t;
+const cutoff = w => addDays(w,-5);                           // Wednesday before the roster week
+const isLate = w => parse(addDays(cutoff(w),1)) <= NOW;      // cut-off day has fully passed
+const btn = (label,act,data={},cls='',dis=false) => `<button class="btn ${cls}" data-act="${act}" ${Object.entries(data).map(([k,v])=>`data-${k}="${esc(v)}"`).join(' ')} ${dis?'disabled':''}>${label}</button>`;
+const opt = (v,l,sel) => `<option value="${esc(v)}" ${sel?'selected':''}>${esc(l)}</option>`;
+const tag = (t,c='') => `<span class="tag ${c}">${t}</span>`;
+
+/* ---------- state ---------- */
+let S, UI, seq = 0, clock = 0, skipHash = 0;
+const nid = p => p+(++seq);
+const stamp = () => { const d = new Date(NOW.getTime()+(clock++)*60000); return d.getDate()+' '+MON[d.getMonth()]+' '+d.getFullYear()+', '+pad(d.getHours())+':'+pad(d.getMinutes()); };
+const user = id => S.users.find(u => u.id===id);
+const amb = no => S.ambulances.find(a => a.no===no);
+const uname = id => { const u = user(id); return u ? u.name : id; };
+const qual = u => u.type==='manager' ? 'Manager' : u.roles.map(r=>ROLES[r]).join(', ');
+const route = () => (location.hash || '#/manager/dashboard').slice(2).split('/');
+function actor(){ const r = route()[0]; return r==='it' ? 'Kelvin Ong (IT Administrator)' : r==='staff' ? uname(UI.staffId)+' (Staff '+UI.staffId+')' : uname(MGR)+' (Manager '+MGR+')'; }
+function audit(action,prev,next,reason,who,when){ S.audit.unshift({t:when||stamp(), who:who||actor(), action, prev:prev||'—', next:next||'—', reason:reason||'—'}); }
+function sms(to,topic,text,when){ const u = user(to); S.sms.unshift({t:when||stamp(), to, name:u.name, contact:u.contact, topic, text}); }
+function flash(type,html){ UI.flash = {type,html}; }
+
+function freshRos(w){ return {week:w||PLAN[0], shift:null, slot:null, cand:null, pubFail:null, ambPick:null, created:null}; }
+function freshUI(){ return {
+  drawer:null, staffId:'S1038', flash:null, modal:null, sc:null, scStep:0,
+  acc:{mode:null, form:null, err:null, orig:null, hi:null},
+  dash:{week:CUR, monthly:false, month:'2026-11', uWeek:CUR, uDay:''},
+  ros:freshRos(PLAN[0]),
+  fleet:{form:null, unav:null, affected:null},
+  sr:{week:CUR}, mon:{month:'2026-11'},
+  plan:{for:null, draft:null, prefWeek:PLAN[1]}
+}; }
+
+/* ---------- roster queries (control-layer logic) ---------- */
+function slotById(id){ for(const [week,roster] of Object.entries(S.rosters)){ const slot = roster.slots.find(x=>x.id===id); if(slot) return {slot,roster,week}; } return null; }
+function staffAsgs(staffId){ const out=[]; for(const [week,roster] of Object.entries(S.rosters)) for(const slot of roster.slots) for(const asg of slot.asg) if(asg.staffId===staffId) out.push({slot,asg,week,roster}); return out; }
+function hoursWeek(staffId,w,withPending){ const r = S.rosters[w]; if(!r) return 0; let h=0; for(const sl of r.slots) for(const a of sl.asg) if(a.staffId===staffId && (withPending||a.status==='confirmed')) h+=12; return h; }
+function hoursMonth(staffId,ym,publishedOnly){ let h=0; for(const r of Object.values(S.rosters)){ if(publishedOnly && r.status!=='published') continue; for(const sl of r.slots) if(sl.shiftId.startsWith(ym)) for(const a of sl.asg) if(a.staffId===staffId && a.status==='confirmed') h+=12; } return h; }
+function positions(slot){ const pos = POS.map((role,i)=>({role,i,asg:null})); for(const a of slot.asg) for(const r of a.roles){ const p = pos.find(p=>p.role===r && !p.asg); if(p) p.asg=a; } return pos; }
+const ambOk = slot => { if(!slot.amb) return false; const a = amb(slot.amb); return !!a && a.status==='active' && !a.unavail.includes(slot.shiftId); };
+// a role counts as filled only by a confirmed, active staff member who is recorded as qualified for it (FR-08, FR-12, FR-18)
+// (shifts that have already started are historical records and are left as they were)
+const posOk = (p,past) => { if(!p.asg || p.asg.status!=='confirmed') return false; const u = user(p.asg.staffId); return past || (u.status==='active' && u.roles.includes(p.role)); };
+const missing = slot => { const past = started(slot.shiftId); return positions(slot).filter(p => !posOk(p,past)); };
+const fully = slot => ambOk(slot) && missing(slot).length===0;                 // "fully staffed and available"
+const shiftSlots = (w,sh) => S.rosters[w] ? S.rosters[w].slots.filter(s=>s.shiftId===sh) : [];
+const fullCount = (w,sh) => shiftSlots(w,sh).filter(fully).length;
+const slotNo = slot => shiftSlots(weekOf(slot.shiftId),slot.shiftId).indexOf(slot)+1;
+const missTxt = slot => { const m = missing(slot), c = {}; m.forEach(p=>c[p.role]=(c[p.role]||0)+1); return Object.entries(c).map(([r,n])=>ROLES[r]+' ×'+n).join(', '); };
+const isAvail = (id,sh) => !!(S.avail[id] && S.avail[id][sh]);
+// FR-02 / BR-DOC-16: declared availability for a shift, visible to the manager across the planning period
+function availCount(sh){ const busy = new Set(); for(const s of shiftSlots(weekOf(sh),sh)) for(const a of s.asg) busy.add(a.staffId);
+  const free = S.users.filter(u => u.type==='staff' && u.status==='active' && isAvail(u.id,sh) && !busy.has(u.id)), o = {total:free.length};
+  Object.keys(ROLES).forEach(r => { o[r] = free.filter(u => u.roles.includes(r)).length; }); return o; }
+const inWindow = d => d >= iso(NOW) && d <= addDays(PLAN[4],6);          // NFR-06: staff location only for dates within the five-week planning window
+function eligibleAmbs(slot){ const used = new Set(shiftSlots(weekOf(slot.shiftId),slot.shiftId).filter(s=>s!==slot && s.amb).map(s=>s.amb)); return S.ambulances.filter(a => a.status==='active' && !a.unavail.includes(slot.shiftId) && !used.has(a.no)); }
+
+/* assignment rules: qualification (FR-08), same-shift (FR-09), 12-hour rest (FR-10), 40-hour warning (FR-11) */
+function validate(staffId,slot,roles){
+  const u = user(staffId), errs = [], g = gIdx(slot.shiftId);
+  if(u.status!=='active') errs.push(`${u.name}'s account has been deactivated, so they can no longer be assigned.`);
+  roles.forEach(r => { if(!u.roles.includes(r)) errs.push(`Qualification rule: ${u.name} is not recorded as qualified for the ${ROLES[r]} role.`); });
+  for(const x of staffAsgs(staffId)){
+    const d = gIdx(x.slot.shiftId)-g;
+    if(d===0) errs.push(`Same-shift rule: ${u.name} is already assigned in this shift (Slot ${slotNo(x.slot)}, ${x.slot.amb||'no ambulance'}).`);
+    else if(Math.abs(d)===1) errs.push(`12-hour rest rule: ${u.name} is assigned to ${sLbl(x.slot.shiftId)}, which would leave less than 12 hours of rest.`);
+  }
+  const h = hoursWeek(staffId, weekOf(slot.shiftId), true);
+  return {errs, warn: !errs.length && h+12 > MAX_HOURS ? {from:h, to:h+12} : null};
+}
+/* suitable / eligible standby candidates: active, qualified, declared available, not assigned that shift, >= 12 h rest */
+function suitable(slot,role){
+  const w = weekOf(slot.shiftId);
+  return S.users.filter(u => u.type==='staff' && u.status==='active' && u.roles.includes(role) && isAvail(u.id,slot.shiftId) && !(slot.excl||[]).includes(u.id) && !validate(u.id,slot,[role]).errs.length)
+    .sort((a,b) => hoursWeek(a.id,w,true)-hoursWeek(b.id,w,true) || a.name.localeCompare(b.name));
+}
+
+/* ---------- seed data (simulated Database) ---------- */
+const FIRST = ['Aisha','Ben','Chloe','Darren','Elena','Farid','Grace','Hafiz','Irene','Jason','Kavita','Liam','Mei Ling','Nabil','Olivia','Prakash','Qistina','Ryan','Siti','Tom','Uma','Victor','Wei Jie','Xin Yi','Yusuf','Zara','Arjun','Bella','Caleb','Devi','Ethan','Fiona','Gopal','Hannah','Imran','Joy','Kumar'];
+const LAST = ['Tan','Lim','Rahman','Singh','Lee','Ng','Ibrahim','Nair','Wong','Chua','Hassan','Pillai','Goh','Teo','Ismail','Menon','Koh','Yeo','Osman','Raj'];
+function mulberry(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+
+function seed(){
+  seq = 0; clock = 0;
+  const users = []; let n = 0;
+  const mk = roles => { const i = n++; const ph = String((i*104729+1234567)%10000000).padStart(7,'0');
+    users.push({id:'S'+(1001+i), type:'staff', name:FIRST[i%FIRST.length]+' '+LAST[(i*3)%LAST.length], roles, contact:'+65 8'+ph.slice(0,3)+' '+ph.slice(3), start:(2015+i%10)+'-'+pad(1+(i*5)%12)+'-01', status:'active'}); };
+  for(let k=0;k<CONFIG.drivers;k++) mk(['driver','careAssistant']);   // conflict C3: all current drivers are recorded as care-assistant qualified
+  for(let k=0;k<CONFIG.careAssistants;k++) mk(['careAssistant']);
+  for(let k=0;k<CONFIG.paramedics;k++) mk(['paramedic']);
+  users.push({id:'M2001', type:'manager', name:'Farah Aziz', roles:[], contact:'+65 9000 1001', start:'2016-03-01', status:'active'});
+  users.push({id:'M2002', type:'manager', name:'Daniel Koh', roles:[], contact:'+65 9000 1002', start:'2018-07-01', status:'active'});
+  S = {users, ambulances:[], rosters:{}, avail:{}, late:{}, prefs:{}, sms:[], audit:[]};
+  for(let a=1;a<=CONFIG.ambulances;a++) S.ambulances.push({no:'A'+pad(a), status:'active', unavail:[]});
+
+  const D = users.slice(0,CONFIG.drivers).map(u=>u.id);
+  const C = users.slice(CONFIG.drivers, CONFIG.drivers+CONFIG.careAssistants).map(u=>u.id);
+  const P = users.slice(CONFIG.drivers+CONFIG.careAssistants, n).map(u=>u.id);
+  const me = P[0];
+  // Base rota: each crew works three consecutive days then three consecutive nights, then rests.
+  // The pattern guarantees no same-shift clash and at least 12 hours of rest between shifts.
+  const t0 = dayNum(HIST[0]);
+  const crew = (pool,k,s,sh) => { const len = pool.length, t = dayNum(sDate(sh))-t0, a = (((-s*t)%len)+len)%len, off = sType(sh)==='N'?k:0; return Array.from({length:k},(_,x) => pool[(a+off+x)%len]); };
+  const A = (id,role) => ({id:nid('AS'), staffId:id, roles:[role], status:'confirmed'});
+  [...HIST,CUR,PLAN[0]].forEach((w,wi) => { const slots = [];
+    weekShifts(w).forEach(sh => { const d = crew(D,6,2,sh), c = crew(C,6,2,sh), p = crew(P,12,4,sh);
+      for(let a=0;a<MIN_AMB;a++) slots.push({id:nid('SL'), shiftId:sh, amb:'A'+pad(a+1), asg:[A(d[a],'driver'),A(c[a],'careAssistant'),A(p[2*a],'paramedic'),A(p[2*a+1],'paramedic')]}); });
+    S.rosters[w] = {status: wi<4 ? 'published' : 'draft', slots}; });
+
+  // Demo-specific adjustments, made with the same rule checks the system uses.
+  const fixed = new Set([me,C[19],P[35],D[16],P[34],P[33],C[18],D[15]]);
+  const poolOf = id => D.includes(id) ? D : C.includes(id) ? C : P;
+  const freeFor = (slot,role,from) => { const w = weekOf(slot.shiftId); return from.filter(id => !fixed.has(id) && !validate(id,slot,[role]).errs.length).sort((a,b) => hoursWeek(a,w)-hoursWeek(b,w) || from.indexOf(a)-from.indexOf(b))[0]; };
+  function setPattern(id,w,idxs){
+    const role = user(id).roles[0], sh = weekShifts(w), keep = idxs.map(x => sh[x]);
+    S.rosters[w].slots.forEach(sl => sl.asg.forEach(a => { if(a.staffId!==id || keep.includes(sl.shiftId)) return;
+      a.staffId = '__'; const sub = freeFor(sl,role,poolOf(id)); if(!sub) console.error('seed: no substitute', w, sl.shiftId); a.staffId = sub; }));
+    keep.forEach(x => { if(staffAsgs(id).some(y => y.slot.shiftId===x)) return;
+      const sl = shiftSlots(w,x)[0], a = sl.asg.find(y => y.roles[0]===role && !fixed.has(y.staffId));
+      if(validate(id,sl,[role]).errs.length) console.error('seed: pattern breaks a rule', id, x); a.staffId = id; });
+  }
+  // Sat 21 Nov Night runs a seventh ambulance
+  { const sl = {id:nid('SL'), shiftId:sid(CUR,5,'N'), amb:'A07', asg:[]}; S.rosters[CUR].slots.push(sl);
+    [['driver',D],['careAssistant',C],['paramedic',P],['paramedic',P]].forEach(([r,pl]) => sl.asg.push(A(freeFor(sl,r,pl),r))); }
+  [[C[19],CUR,[]],[P[35],CUR,[2]],[D[16],CUR,[0,4]],[me,CUR,[1,5,9,11]],
+   [P[34],PLAN[0],[6]],[P[33],PLAN[0],[4,10]],[C[18],PLAN[0],[3,8]],[D[15],PLAN[0],[5,11]],[me,PLAN[0],[2,5,9,12]]].forEach(x => setPattern(...x));
+
+  // draft week: one Paramedic role still requires manpower (Mon 23 Nov Day, last slot)
+  { const sl = shiftSlots(PLAN[0], sid(PLAN[0],0,'D'))[5]; sl.asg.pop(); }
+  // current week: a paramedic rejected Sun 22 Nov Night; a standby request to the demo staff member is pending
+  { const sl = shiftSlots(CUR, sid(CUR,6,'N'))[3]; const old = sl.asg.pop(); sl.excl = [old.staffId];
+    sl.asg.push({id:nid('AS'), staffId:me, roles:['paramedic'], status:'pending'});
+    const t1='19 Nov 2026, 16:05', t2='19 Nov 2026, 16:20', where=`${sLbl(sl.shiftId)}, Slot 4 (${sl.amb})`;
+    audit('Assignment rejected by staff', `${uname(old.staffId)} – Paramedic, ${where}`, 'Role unassigned', 'Medical appointment', uname(old.staffId)+' (Staff '+old.staffId+')', t1);
+    sms(MGR,'Assignment rejected', `${uname(old.staffId)} rejected Paramedic, ${where}. Reason: Medical appointment. Shift now has 5 of 6 fully staffed ambulances.`, t1);
+    audit('Standby replacement requested (pending confirmation)', 'Role unassigned', `${uname(me)} – Paramedic, ${where}`, '—', uname(MGR)+' (Manager '+MGR+')', t2);
+    sms(me,'Replacement offer', `You have been selected as standby replacement: Paramedic, ${where}, ${sTimes(sl.shiftId)}, ${STATION}. Please confirm or decline in the system.`, t2);
+  }
+  // fleet
+  amb('A09').status = 'deactivated';
+  amb('A10').unavail.push(sid(PLAN[0],6,'D'), sid(PLAN[0],6,'N'));
+  amb('A07').unavail.push(sid(PLAN[0],6,'N'));
+  amb('A08').unavail.push(sid(PLAN[0],6,'N'));
+
+  // availability & preferences
+  const rnd = mulberry(42), assigned = {};
+  for(const r of Object.values(S.rosters)) for(const sl of r.slots) for(const a of sl.asg) (assigned[a.staffId]||(assigned[a.staffId]=new Set())).add(sl.shiftId);
+  const special = [C[19],P[35],D[16],P[34],P[33],C[18],D[15]];
+  users.filter(u=>u.type==='staff').forEach(u => {
+    const av = S.avail[u.id] = {}, as = assigned[u.id] || new Set();
+    [CUR,PLAN[0]].forEach(w => weekShifts(w).forEach(sh => { const r = rnd(); if(as.has(sh) || r<0.85 || special.includes(u.id)) av[sh]=true; }));
+    weekShifts(PLAN[1]).forEach(sh => { if(rnd()<0.35) av[sh]=true; });
+    S.prefs[u.id] = {};
+    [CUR,PLAN[0],PLAN[1]].forEach(w => { const r = rnd(), st = rnd()<0.6; const shiftType = r<0.35?'day':r<0.7?'night':''; if(shiftType||st) S.prefs[u.id][w] = {shiftType, station:st}; });
+  });
+  // Sun 22 Nov Day: no rested driver has declared availability (drives "no suitable candidate" scenarios)
+  { const sh = sid(CUR,6,'D'); D.forEach(id => { if(!(assigned[id]||new Set()).has(sh)) delete S.avail[id][sh]; }); }
+  S.avail[me][sid(CUR,6,'N')] = true;
+  delete S.prefs[me][PLAN[1]]; S.prefs[me][PLAN[0]] = {shiftType:'night', station:true};
+  [C[3],P[10],D[8]].forEach(id => { S.late[id] = {[PLAN[0]]:true}; });
+  S.demo = {D,C,P,me};
+}
+
+/* =====================================================================
+   RENDERING
+   ===================================================================== */
+function go(h){ if(location.hash!==h){ skipHash++; location.hash = h; } render(); }
+window.addEventListener('hashchange', () => { if(skipHash>0){ skipHash--; return; } UI.flash = null; render(); });
+
+const NAV = {
+  it:[['accounts','User Accounts']],
+  manager:[['dashboard','Dashboard'],['roster','Roster Management'],['fleet','Fleet']],
+  staff:[['roster','My Roster'],['monthly','Monthly Assignments'],['planning','Availability & Preferences']]
+};
+function render(){
+  const [role,page,sub] = route();
+  $('#protobar').innerHTML = protobar(role);
+  const who = role==='it' ? 'Kelvin Ong · IT Administrator' : role==='staff' ? esc(uname(UI.staffId))+' · Staff ('+esc(qual(user(UI.staffId)||{roles:[]}))+')' : esc(uname(MGR))+' · Manager';
+  const active = page || NAV[role][0][0];
+  $('#hdr').innerHTML = `<span class="sys">Ambulance Services Workload Management System</span>
+    <nav>${NAV[role].map(([p,l]) => `<a href="#/${role}/${p}" class="${p===active?'on':''}">${l}</a>`).join('')}</nav>
+    <span class="who">Logged in as: ${who}</span>`;
+  let html;
+  if(role==='it') html = pgAccounts();
+  else if(role==='staff'){
+    const me = user(UI.staffId);
+    html = (!me || me.status!=='active') ? `<div class="flash err"><b>Account deactivated.</b> This account has been deactivated by the IT Administrator and can no longer log in. Past records are retained.</div>`
+      : page==='monthly' ? pgMonthly() : page==='planning' ? pgPlanning(sub) : pgStaffRoster();
+  }
+  else html = page==='roster' ? pgRoster() : page==='fleet' ? pgFleet() : pgDash(sub);
+  $('#main').innerHTML = html;
+  $('#drawer').innerHTML = drawerHtml();
+  document.body.classList.toggle('drawer-open', !!UI.drawer);
+  $('#modal').innerHTML = modalHtml();
+}
+function flashHtml(){ const f = UI.flash; if(!f) return ''; const lead = {ok:'✓ Done.', err:'✕ Not saved.', warn:'! Attention.', info:'i'}[f.type]; return `<div class="flash ${f.type}"><b>${lead}</b> ${f.html}</div>`; }
+function pageHead(title,boundary,ucs){ return `<div class="phead"><h1>${title}</h1><div class="meta">Boundary class: <code>${boundary}</code> · Supports: ${ucs}</div></div>${flashHtml()}`; }
+
+function protobar(role){
+  const staff = S.users.filter(u => u.type==='staff' && u.status==='active');
+  return `<span class="lbl">PROTOTYPE CONTROLS</span><span>View as:</span>
+    <button data-act="asRole" data-r="it" class="${role==='it'?'on':''}">IT Administrator</button>
+    <button data-act="asRole" data-r="manager" class="${role==='manager'?'on':''}">Manager</button>
+    <button data-act="asRole" data-r="staff" class="${role==='staff'?'on':''}">Staff</button>
+    <select data-chg="persona" title="Staff member to view as">${staff.map(u => opt(u.id, u.name+' ('+u.id+', '+qual(u)+')', u.id===UI.staffId)).join('')}</select>
+    <span class="sp"></span><span>Simulated date: Fri 20 Nov 2026, 10:00</span>
+    <button data-act="drawer" data-d="guide" class="${UI.drawer==='guide'?'on':''}">Scenario guide</button>
+    <button data-act="drawer" data-d="sms" class="${UI.drawer==='sms'?'on':''}">SMS Service outbox (${S.sms.length})</button>
+    <button data-act="drawer" data-d="audit" class="${UI.drawer==='audit'?'on':''}">Audit log (${S.audit.length})</button>
+    <button data-act="reset">Reset demo data</button>`;
+}
+
+function modalHtml(){
+  const m = UI.modal; if(!m) return '';
+  return `<div class="ov"><div class="mbox"><h2>${m.title}</h2>${m.html||''}
+    ${m.reason ? `<p><label for="m-reason"><b>${m.reason}</b></label><br><textarea id="m-reason">${esc(m.val||'')}</textarea></p>` : ''}
+    ${m.err ? `<p class="merr">${m.err}</p>` : ''}
+    <p>${m.btns.map(b => btn(b.l,b.act,b.d||{},b.pri?'pri':'')).join(' ')}</p></div></div>`;
+}
+
+/* =====================================================================
+   UserAccountPage  (UC-01)
+   ===================================================================== */
+function pgAccounts(){
+  const a = UI.acc;
+  const rows = [...S.users].sort((x,y)=>x.id.localeCompare(y.id)).map(u => `<tr class="${u.status!=='active'?'muted':''} ${a.hi===u.id?'hi':''}">
+    <td>${esc(u.id)}</td><td>${esc(u.name)}</td><td>${u.type==='manager'?'Manager':'Staff'}</td><td>${u.type==='manager'?'—':esc(qual(u))}</td><td>${esc(u.contact)}</td><td>${esc(u.start)}</td>
+    <td>${u.status==='active'?tag('ACTIVE'):tag('DEACTIVATED','grey')}</td>
+    <td>${u.status==='active' ? btn('Edit','accEdit',{id:u.id})+btn('Deactivate','accDeact',{id:u.id}) : '<small>Cannot log in; records retained</small>'}</td></tr>`).join('');
+  return pageHead('User Accounts','UserAccountPage','UC-01 Manage User Account (FR-01, NFR-07)') +
+    `<div class="bar">${btn('+ Create Account','accNew',{},'pri')}<span class="sm">Staff and manager accounts. The IT Administrator has no access to roster, workload or availability data.</span></div>
+    ${a.mode ? accForm() : ''}
+    <div class="scroll" style="max-height:520px"><table class="t"><tr><th>Staff ID</th><th>Full name</th><th>Account type</th><th>Role qualification(s)</th><th>Contact details</th><th>Start date</th><th>Status</th><th>Actions</th></tr>${rows}</table></div>`;
+}
+function accForm(){
+  const a = UI.acc, f = a.form, e = a.err || {};
+  const fld = (k,label,input) => `<div class="fld ${e[k]?'bad':''}"><span class="l">${label}</span>${input}${e[k]?`<em>${esc(e[k])}</em>`:''}</div>`;
+  return `<div class="box"><h2>${a.mode==='create' ? 'Create Account' : 'Edit Account – '+esc(a.orig)}</h2><div class="form">
+    ${fld('type','Account type',`<select id="f-type">${opt('staff','Staff',f.type==='staff')}${opt('manager','Manager',f.type==='manager')}</select>`)}
+    ${fld('name','Full name *',`<input id="f-name" value="${esc(f.name)}">`)}
+    ${fld('id','Staff ID *',`<input id="f-id" value="${esc(f.id)}">`)}
+    ${fld('roles','Role qualification(s) * <small>(staff accounts)</small>',`<div class="cks">${Object.entries(ROLES).map(([k,v]) => `<label class="ck"><input type="checkbox" class="f-role" value="${k}" ${f.roles.includes(k)?'checked':''}> ${v}</label>`).join('')}</div>`)}
+    ${fld('contact','Contact details * <small>(mobile number, used for SMS)</small>',`<input id="f-contact" value="${esc(f.contact)}">`)}
+    ${fld('start','Start date *',`<input id="f-start" type="date" value="${esc(f.start)}">`)}
+    </div><p>${btn(a.mode==='create'?'Create account':'Save changes','accSubmit',{},'pri')} ${btn('Cancel','accCancel')}</p></div>`;
+}
+
+/* =====================================================================
+   StaffPlanningPage  (UC-02 availability, UC-03 preferences)
+   ===================================================================== */
+function planDraft(){ const P = UI.plan; if(P.for!==UI.staffId || !P.draft){ P.for = UI.staffId; P.draft = Object.assign({}, S.avail[UI.staffId]||{}); } return P.draft; }
+function pgPlanning(sub){
+  const pref = sub==='preferences', id = UI.staffId;
+  const head = pageHead('Availability & Preferences','StaffPlanningPage','UC-02 Manage Availability (FR-02, FR-03, FR-04) · UC-03 Set Job Preference (FR-05)') +
+    `<div class="tabs"><a href="#/staff/planning" class="${pref?'':'on'}">Availability</a><a href="#/staff/planning/preferences" class="${pref?'on':''}">Job preferences</a></div>`;
+  if(pref){
+    const w = UI.plan.prefWeek, p = (S.prefs[id]||{})[w] || {shiftType:'', station:false};
+    return head + `<div class="cols"><div class="box"><h2>Set preference for a roster week</h2>
+      <p><label>Roster week: <select data-chg="prefWeek">${PLAN.map(x => opt(x,weekLbl(x),x===w)).join('')}</select></label></p>
+      <p><b>Preferred shift type</b><br>
+        <label class="ck"><input type="radio" name="p-type" value="" ${!p.shiftType?'checked':''}> No preference</label>
+        <label class="ck"><input type="radio" name="p-type" value="day" ${p.shiftType==='day'?'checked':''}> Day (07:00–19:00)</label>
+        <label class="ck"><input type="radio" name="p-type" value="night" ${p.shiftType==='night'?'checked':''}> Night (19:00–07:00)</label></p>
+      <p><b>Preferred station(s)</b><br><label class="ck"><input type="checkbox" id="p-station" ${p.station?'checked':''}> ${STATION}</label></p>
+      <p>${btn('Save preferences','prefSave',{},'pri')}</p>
+      <p class="sm">Leave both fields blank to record no preference for the week. Preferences are advisory and are shown to the manager during roster allocation.</p></div>
+      <div class="box"><h2>Saved preferences</h2><table class="t"><tr><th>Roster week</th><th>Shift type</th><th>Station(s)</th></tr>
+      ${PLAN.map(x => { const q = (S.prefs[id]||{})[x]; return `<tr><td>${weekLbl(x)}</td>${q ? `<td>${q.shiftType ? (q.shiftType==='day'?'Day':'Night') : '—'}</td><td>${q.station?STATION:'—'}</td>` : '<td colspan="2">No preference recorded</td>'}</tr>`; }).join('')}</table></div></div>`;
+  }
+  const d = planDraft();
+  const mine = new Set(staffAsgs(id).filter(x => x.roster.status==='published' && x.asg.status==='confirmed').map(x => x.slot.shiftId));
+  const weeks = PLAN.map(w => {
+    const late = isLate(w), wasLate = (S.late[id]||{})[w];
+    return `<div class="wk"><h3>${weekLbl(w)} ${wasLate?tag('FLAGGED LATE','red'):''}<br><small>Cut-off: ${fmtD(cutoff(w))} – ${late ? '<b>passed; changes will be flagged late</b>' : 'open'}</small></h3>
+      <table><tr><th>Date</th><th>Day<br><small>07:00–19:00</small></th><th>Night<br><small>19:00–07:00</small></th></tr>
+      ${[0,1,2,3,4,5,6].map(i => `<tr><td>${fmtD(addDays(w,i))}</td>${['D','N'].map(t => { const sh = sid(w,i,t); return `<td><label><input type="checkbox" data-chg="avToggle" data-sh="${sh}" ${d[sh]?'checked':''}> Available</label>${mine.has(sh)?' '+tag('ASSIGNED','dark'):''}</td>`; }).join('')}</tr>`).join('')}</table></div>`;
+  }).join('');
+  return head + `<div class="note">Tick each 12-hour shift you are available to work in the five-week planning period, then submit. <b>A tick means you can be rostered for that shift; it is not an assignment.</b> You may tick both the day and the night shift of a date: you will be assigned at most one of them, with at least 12 hours of rest between shifts. An unticked shift means no availability is declared, so you will not be suggested for it.<br>
+    Availability must be in by the Wednesday before each roster week; later changes are flagged late. Changing availability never changes a published assignment (shifts marked ${tag('ASSIGNED','dark')}); only a manager can amend the roster. Location for available shifts: ${STATION}.</div>
+    <div class="cols">${weeks}</div><p style="margin-top:12px">${btn('Submit availability','avSubmit',{},'pri')} ${btn('Discard changes','avReset')}</p>`;
+}
+
+/* =====================================================================
+   RosterManagementPage  (UC-04, UC-05, UC-06, UC-08)
+   ===================================================================== */
+function createDraft(w){
+  const slots = []; weekShifts(w).forEach(sh => { for(let i=0;i<MIN_AMB;i++) slots.push({id:nid('SL'), shiftId:sh, amb:null, asg:[]}); });
+  S.rosters[w] = {status:'draft', slots};
+  audit('Draft roster created', '—', 'Empty draft roster, week '+weekLbl(w));
+}
+function crewCell(p,past){
+  if(past && p.asg) return esc(uname(p.asg.staffId))+(p.asg.roles.length>1 ? ' <small>(dual role)</small>' : '');
+  const a = p.asg; if(!a) return '<span class="need">REQUIRES MANPOWER</span>';
+  const u = user(a.staffId), dual = a.roles.length>1 ? ' <small>(dual role)</small>' : '', off = u.status!=='active' ? '<br>'+tag('ACCOUNT DEACTIVATED','red') : !u.roles.includes(p.role) ? '<br>'+tag('NOT QUALIFIED','red') : '';
+  return a.status==='pending' ? `<span class="pend">AWAITING CONFIRMATION</span><br>${esc(u.name)}` : esc(u.name)+dual+off;
+}
+function pgRoster(){
+  const R = UI.ros, w = R.week;
+  if(!S.rosters[w]){ createDraft(w); R.created = w; }                      // UC-04 step 2: create an empty draft if none exists
+  const r = S.rosters[w], pub = r.status==='published', shifts = weekShifts(w);
+  if(!R.shift || weekOf(R.shift)!==w){ R.shift = shifts.find(sh => !started(sh)) || shifts[0]; R.slot = null; R.cand = null; }
+  const slots = shiftSlots(w,R.shift), sel = R.slot ? slots.find(s => s.id===R.slot) : null, locked = started(R.shift);
+
+  let html = pageHead('Roster Management','RosterManagementPage','UC-04 Build Weekly Roster · UC-05 Publish Weekly Roster · UC-06 Amend Published Roster · UC-08 Find Standby Replacement');
+  html += `<div class="bar"><label>Roster week: <select data-chg="rosWeek">${[CUR,...PLAN].map(x => { const st = S.rosters[x] ? S.rosters[x].status : 'no roster yet'; return opt(x, weekLbl(x)+(x===CUR?' (current week)':'')+' – '+st, x===w); }).join('')}</select></label>
+    ${pub ? tag('PUBLISHED','dark') : tag('DRAFT')}<span class="sp"></span>
+    ${pub ? '' : btn('Save draft','rosSave')+btn('Publish roster','rosPublish',{},'pri')}</div>`;
+
+  if(R.created===w) html += `<div class="note">No draft roster existed for this week, so an empty draft roster has been created (${MIN_AMB} empty slots per shift).</div>`;
+  if(pub) html += `<div class="note">This roster has been <b>published</b>. Changes to a published roster are made by amending it: select an assignment and choose <b>Reassign</b> or <b>Remove</b> (a reason is required and affected staff are notified by SMS). Unassigned roles can be filled with a <b>standby replacement</b>.</div>`;
+
+  // flags: invalid ambulance assignments (UC-04 9a / UC-12 3b), shortfalls after publication (FR-14), deactivated staff (UC-01 1b)
+  const bad = r.slots.filter(s => s.amb && !ambOk(s) && !started(s.shiftId));
+  if(bad.length) html += `<div class="note red"><b>! Invalid ambulance assignment.</b> This ${pub?'published':'draft'} roster uses an ambulance that is no longer active or available:<ul style="margin:4px 0">${bad.map(s => `<li>${sLbl(s.shiftId)}, Slot ${slotNo(s)}: <b>${s.amb}</b> is unavailable ${btn('Open slot','rosOpen',{slot:s.id})}</li>`).join('')}</ul>${pub ? 'The slot is not counted as an available ambulance; amend the affected assignments.' : 'Select the slot and change its ambulance.'}</div>`;
+  if(pub){
+    const sf = shifts.filter(sh => !started(sh) && fullCount(w,sh) < MIN_AMB);
+    if(sf.length) html += `<div class="note red"><b>! Shortfall flagged.</b> Fewer than ${MIN_AMB} fully staffed and available ambulances:<ul style="margin:4px 0">${sf.map(sh => `<li><b>${sLbl(sh)}</b>: ${fullCount(w,sh)} of ${MIN_AMB} – missing ${shiftSlots(w,sh).filter(s=>!fully(s)).map(s => `Slot ${slotNo(s)} (${s.amb}): ${missTxt(s)||'ambulance unavailable'}`).join('; ')} ${btn('Open shift','rosShift',{sh})}</li>`).join('')}</ul></div>`;
+  }
+  const unq = r.slots.filter(s => !started(s.shiftId) && positions(s).some(p => p.asg && user(p.asg.staffId).status==='active' && !user(p.asg.staffId).roles.includes(p.role)));
+  if(unq.length) html += `<div class="note red"><b>! Qualification changed.</b> ${unq.length} slot(s) have a staff member who is no longer recorded as qualified for the assigned role. Those roles no longer count as filled. Amend them: ${unq.slice(0,6).map(s => btn(sLbl(s.shiftId)+', Slot '+slotNo(s),'rosOpen',{slot:s.id})).join(' ')}</div>`;
+  const deact = r.slots.filter(s => !started(s.shiftId) && s.asg.some(a => user(a.staffId).status!=='active'));
+  if(deact.length) html += `<div class="note red"><b>! Deactivated account.</b> ${deact.length} assignment(s) in this roster are held by staff whose account has been deactivated. Those roles no longer count as filled. Amend them:${deact.slice(0,6).map(s => btn(sLbl(s.shiftId)+', Slot '+slotNo(s),'rosOpen',{slot:s.id})).join(' ')}</div>`;
+
+  if(R.pubFail) html += `<div class="flash err"><b>✕ Roster cannot be published.</b> Every shift needs at least ${MIN_AMB} fully staffed and available ambulances. The roster stays as a draft.
+    <div class="scroll" style="max-height:230px;margin-top:6px"><table class="t"><tr><th>Affected shift</th><th>Fully staffed ambulances</th><th>Ambulance shortfall</th><th>Missing roles</th><th></th></tr>
+    ${R.pubFail.map(f => `<tr><td>${sLbl(f.sh)}</td><td>${f.n} of ${MIN_AMB}</td><td>${MIN_AMB-f.n}</td><td>${f.detail}</td><td>${btn('Open shift','rosShift',{sh:f.sh})}</td></tr>`).join('')}</table></div></div>`;
+
+  // week grid
+  const days = [0,1,2,3,4,5,6].map(i => addDays(w,i));
+  html += `<h3>Shifts in this roster week <small>(select a shift)</small></h3><table class="grid"><tr><th style="width:86px"></th>${days.map(d => `<th>${fmtD(d)}</th>`).join('')}</tr>
+    ${['D','N'].map(t => `<tr><th>${t==='D'?'Day':'Night'}<br><small>${t==='D'?'07:00–19:00':'19:00–07:00'}</small></th>${days.map(d => { const sh = d+'|'+t, fc = fullCount(w,sh);
+      return `<td><button class="cell ${sh===R.shift?'sel':''} ${fc<MIN_AMB?'short':''}" data-act="rosShift" data-sh="${sh}">${fc} fully staffed${fc<MIN_AMB?'<br><b>! below '+MIN_AMB+'</b>':''}<br><small>${started(sh)?'started':availCount(sh).total+' available'}</small></button></td>`; }).join('')}</tr>`).join('')}</table>
+    <p class="sm" style="margin:4px 0 0">Each shift needs at least ${MIN_AMB} fully staffed and available ambulances. "Available" is the number of staff who have declared availability for the shift and are not yet assigned in it.</p>`;
+  if(!pub && !isLate(w)) html += `<div class="note" style="margin-top:8px">The availability cut-off for this roster week is <b>${fmtD(cutoff(w))}</b>; planning normally starts the following Thursday. Staff may still submit or change availability for this week.</div>`;
+  const ac = availCount(R.shift);
+
+  // slots of the selected shift
+  html += `<h3>${sLbl(R.shift)} (${sTimes(R.shift)}) – roster slots <small>(one slot = one ambulance for one 12-hour shift; select a slot)</small></h3>
+    ${locked ? '' : `<p class="sm" style="margin:0 0 6px"><b>Staff availability for this shift</b> (declared available, not yet assigned in it): ${ac.total} staff · qualified as Driver ${ac.driver} · Care Assistant ${ac.careAssistant} · Paramedic ${ac.paramedic}</p>`}
+    <table class="t"><tr><th>Slot</th><th>Ambulance</th>${POSLBL.map(l => `<th>${l}</th>`).join('')}<th>Status</th><th></th></tr>
+    ${slots.map((s,i) => { const pos = positions(s); return `<tr class="${sel===s?'sel':''}"><td>${i+1}</td><td>${s.amb ? s.amb+(ambOk(s)?'':' '+tag('UNAVAILABLE','red')) : '<span class="need">NOT SELECTED</span>'}</td>
+      ${pos.map(p => `<td>${crewCell(p,locked)}</td>`).join('')}<td>${fully(s) ? tag('FULLY STAFFED','dark') : missing(s).length ? tag('REQUIRES MANPOWER','red') : tag('AMBULANCE UNAVAILABLE','red')}</td><td>${btn(sel===s?'Selected':'Select slot','rosSlot',{slot:s.id})}</td></tr>`; }).join('')}</table>
+    <p>${!pub && !locked && slots.length < S.ambulances.length ? btn('+ Add slot','rosAddSlot') : ''} ${locked ? '<small>This shift has already started and is read-only.</small>' : ''}</p>`;
+
+  if(sel) html += slotPanel(sel,pub,locked);
+  return html;
+}
+function slotPanel(slot,pub,locked){
+  const R = UI.ros, el = eligibleAmbs(slot), pos = positions(slot);
+  let ambHtml;
+  if(pub || locked) ambHtml = `<p><b>Ambulance:</b> ${slot.amb||'—'} ${slot.amb && !ambOk(slot) ? tag('UNAVAILABLE','red') : ''} · <b>Station:</b> ${STATION}</p>`;
+  else if(!el.length && !slot.amb) ambHtml = `<div class="flash err"><b>No eligible ambulance is available for this shift.</b> All active ambulances are either unavailable for ${sLbl(slot.shiftId)} or already assigned to another roster slot in the same shift. Select another shift or roster slot.</div>`;
+  else {
+    const opts = el.map(a => `<label class="ck"><input type="radio" name="ambPick" data-chg="ambPick" value="${a.no}" ${R.ambPick===a.no?'checked':''}> ${a.no}</label>`).join('');
+    ambHtml = `<p><b>Ambulance:</b> ${slot.amb ? slot.amb+(ambOk(slot)?'':' '+tag('UNAVAILABLE','red')) : '<span class="need">NOT SELECTED</span>'} · <b>Station:</b> ${STATION}</p>
+      <div class="box dash"><b>Eligible ambulances for this shift</b> <small>(active, available for the shift, not assigned to another slot in the same shift)</small><br>
+      ${opts || '<i>No other eligible ambulance.</i>'} ${slot.amb && el.length ? btn('Change ambulance','rosChangeAmb',{slot:slot.id}) : ''}
+      ${slot.amb ? '' : '<br><small>Select an ambulance, then choose a crew role to fill below.</small>'}</div>`;
+  }
+  const rows = pos.map(p => {
+    const a = p.asg; let acts = '';
+    if(locked) acts = '<small>read-only</small>';
+    else if(!a) acts = pub ? btn('Find standby replacement','rosStandby',{slot:slot.id,pos:p.i},'pri') : btn('Fill role','rosFill',{slot:slot.id,pos:p.i},'pri');
+    else if(a.status==='pending') acts = btn('Withdraw request','rosWithdraw',{slot:slot.id,asg:a.id});
+    else acts = pub ? btn('Reassign','rosReassign',{slot:slot.id,pos:p.i})+btn('Remove','rosRemovePub',{slot:slot.id,asg:a.id}) : btn('Replace','rosReplace',{slot:slot.id,pos:p.i})+btn('Remove','rosRemove',{slot:slot.id,asg:a.id});
+    const extra = a && a.status==='pending' ? '<br><small>Confirmation request sent by SMS. The vacancy is not filled until the staff member confirms.</small>' : '';
+    return `<tr><td>${POSLBL[p.i]}</td><td>${crewCell(p,locked)}${extra}</td><td>${acts}</td></tr>`;
+  }).join('');
+  return `<div class="box"><h2>Slot ${slotNo(slot)} – ${sLbl(slot.shiftId)} (${sTimes(slot.shiftId)})</h2>${ambHtml}
+    <table class="t"><tr><th style="width:150px">Crew role</th><th>Assigned staff</th><th style="width:260px">Actions</th></tr>${rows}</table>
+    <p class="sm">A slot is fully staffed with one driver, one care assistant and two paramedics, all confirmed. A driver who is also care-assistant qualified may cover both roles.</p></div>
+    ${R.cand && R.cand.slotId===slot.id ? candPanel(slot) : ''}`;
+}
+function availGrid(id,w,cur){
+  const as = new Set(staffAsgs(id).map(x => x.slot.shiftId));
+  return `<table class="av"><tr><th></th>${[0,1,2,3,4,5,6].map(i => `<th>${DOW[parse(addDays(w,i)).getDay()]}<br>${parse(addDays(w,i)).getDate()}</th>`).join('')}</tr>
+    ${['D','N'].map(t => `<tr><th>${t}</th>${[0,1,2,3,4,5,6].map(i => { const sh = sid(w,i,t); const c = as.has(sh)?'a':isAvail(id,sh)?'y':''; return `<td class="${c} ${sh===cur?'cur':''}">${as.has(sh)?'A':isAvail(id,sh)?'✓':'–'}</td>`; }).join('')}</tr>`).join('')}</table>`;
+}
+function candPanel(slot){
+  const c = UI.ros.cand, w = weekOf(slot.shiftId), role = c.role, standby = c.mode==='standby';
+  const old = c.replace ? slot.asg.find(a => a.id===c.replace) : null;
+  const title = standby ? `Eligible standby candidates – ${ROLES[role]}` : c.mode==='reassign' ? `Direct reassignment – replacing ${esc(uname(old.staffId))} as ${ROLES[role]}` : `Candidates – ${ROLES[role]}${old ? ' (replacing '+esc(uname(old.staffId))+')' : ''}`;
+  let html = `<div class="box" id="candPanel"><h2>${title} · Slot ${slotNo(slot)} (${slot.amb||c.amb||'—'}) · ${sLbl(slot.shiftId)}</h2>`;
+  const crit = standby ? 'Eligible standby staff have declared availability for the shift, are qualified for the role, are not already assigned during the shift and would have at least 12 hours of rest between duties.'
+    : 'Suitable candidates are qualified for the role, have declared availability for the shift, are not already assigned during the shift and would have at least 12 hours of rest. Lowest assigned hours first; staff who rejected or were removed from this slot are not suggested.';
+  if(!c.list.length){
+    html += standby ? `<div class="flash err"><b>No standby candidates are available.</b> No staff member is eligible for this role. The role remains unassigned and any shortfall below ${MIN_AMB} fully staffed ambulances stays flagged on the roster.</div>`
+      : c.mode==='reassign' ? `<div class="flash err"><b>No suitable candidate is available for direct reassignment.</b> You may leave the role unassigned and look for a standby replacement. ${btn('Remove '+esc(uname(old.staffId))+' and leave role unassigned','rosRemovePub',{slot:slot.id,asg:old.id})}</div>`
+      : `<div class="flash err"><b>No suitable candidate is available for this role.</b> You can look up another staff member below.</div>`;
+  } else html += `<p class="sm">${c.list.length} ${standby?'eligible standby':'suitable'} candidate(s) found; up to three are shown side by side. ${crit}</p>`;
+  if(standby && c.list.length) html += `<p class="sm"><b>All eligible standby staff:</b> ${c.list.map(id => `${esc(uname(id))} (${hoursWeek(id,w,true)} h)${c.shown.includes(id)?'':' '+btn('Compare','rosCandAdd',{id})}`).join(' · ')}</p>`;
+  if(c.err) html += `<div class="flash err"><b>✕ Assignment not ${standby?'made':'saved'}.</b> ${c.err.errs.map(esc).join('<br>')}<br><small>Select a different candidate.</small></div>`;
+  html += `<div class="cands">${c.shown.map(id => {
+    const u = user(id), h = hoursWeek(id,w,true), pf = (S.prefs[id]||{})[w], late = (S.late[id]||{})[w], inList = c.list.includes(id);
+    const other = role==='driver' ? 'careAssistant' : role==='careAssistant' ? 'driver' : null;
+    const canDual = other && u.roles.includes(other) && positions(slot).some(p => p.role===other && (!p.asg || (c.replace && p.asg.id===c.replace)));
+    return `<div class="cand"><h4>${esc(u.name)} <small>${u.id}</small></h4><div class="sm">${esc(qual(u))} ${inList?'':tag('ADDED MANUALLY','grey')} ${isAvail(id,slot.shiftId)?'':tag('AVAILABILITY NOT DECLARED','red')}</div>
+      <table class="kv"><tr><td>Assigned hours (week)</td><td><b>${h} h</b> ${h>MAX_HOURS?tag('OVER 40 H','red'):''}</td></tr>
+      <tr><td>Job preference</td><td>${pf ? 'Shift: '+(pf.shiftType?(pf.shiftType==='day'?'Day':'Night'):'none')+' · Station: '+(pf.station?STATION:'none') : 'No preference recorded'}</td></tr>
+      <tr><td>Location on ${fmtShort(sDate(slot.shiftId))}</td><td>${!inWindow(sDate(slot.shiftId)) ? 'Not shown (outside planning window)' : isAvail(id,slot.shiftId) ? STATION : 'Not declared'}</td></tr></table>
+      <div class="sm">Availability for the week ${late?tag('LATE CHANGE','red'):''}</div>${availGrid(id,w,slot.shiftId)}
+      ${canDual ? `<label class="ck sm"><input type="checkbox" id="dual-${id}" value="${other}"> Also cover the ${ROLES[other]} role (dual-qualified)</label><br>` : ''}
+      <p style="margin:6px 0 0">${btn('Select candidate','rosSelect',{id},'pri')} ${btn('Hide','rosCandDrop',{id})}</p></div>`; }).join('')}</div>
+    <p class="sm" style="margin:6px 0">Availability key: ✓ available · – not declared · A already assigned · red outline = this shift. Location is shown only for dates within the five-week planning window. Preferences are advisory.</p>`;
+  if(!standby){
+    const others = S.users.filter(u => u.type==='staff' && u.status==='active' && !c.shown.includes(u.id));
+    html += `<p><label>Look up another staff member to compare: <select id="candAdd">${others.map(u => opt(u.id, u.name+' ('+u.id+', '+qual(u)+')')).join('')}</select></label> ${btn('Add to comparison','rosCandAdd')}</p>`;
+  }
+  return html + `<p>${btn('Cancel','rosCandClose')}</p></div>`;
+}
+
+/* =====================================================================
+   ManagerDashboardPage  (UC-10 workload, UC-11 utilisation)
+   ===================================================================== */
+function pgDash(sub){
+  const util = sub==='utilisation', Dd = UI.dash, weeks = [HIST[2],CUR,...PLAN];
+  const head = pageHead('Manager Dashboard','ManagerDashboardPage','UC-10 Review Staff Workload (FR-19, FR-26) · UC-11 View Ambulance Utilisation (FR-20, FR-21, FR-22)') +
+    `<div class="tabs"><a href="#/manager/dashboard" class="${util?'':'on'}">Staff workload</a><a href="#/manager/dashboard/utilisation" class="${util?'on':''}">Ambulance utilisation</a></div>`;
+  const wkOpt = sel => weeks.map(x => opt(x, weekLbl(x)+(x===CUR?' (current week)':'')+' – '+(S.rosters[x]?S.rosters[x].status:'no roster yet'), x===sel)).join('');
+  const staff = S.users.filter(u => u.type==='staff');
+  const bar = (h,max) => `<span class="hbar ${h>MAX_HOURS&&max===72?'o':''}" style="width:${Math.round(Math.min(h/max,1)*160)}px"></span>`;
+
+  if(!util && Dd.monthly){
+    const rows = staff.map(u => ({u,h:hoursMonth(u.id,Dd.month,false)})).filter(x => x.u.status==='active' || x.h>0).sort((a,b) => b.h-a.h || a.u.name.localeCompare(b.u.name));
+    const max = Math.max(1,...rows.map(x=>x.h));
+    return head + `<div class="bar">${btn('Weekly view','dashWeekly')}${btn('Monthly view','dashMonthly',{},'pri')}<label>Calendar month: <select data-chg="dashMonth">${['2026-10','2026-11','2026-12'].map(m => opt(m,monthLbl(m),m===Dd.month)).join('')}</select></label></div>
+      <h3>Total assigned hours per staff member – ${monthLbl(Dd.month)}</h3>
+      <div class="scroll" style="max-height:560px"><table class="t"><tr><th>Staff member</th><th>Staff ID</th><th>Role qualification(s)</th><th>Assigned hours (calendar month)</th></tr>
+      ${rows.map(x => `<tr><td>${esc(x.u.name)}</td><td>${x.u.id}</td><td>${esc(qual(x.u))}</td><td><b>${x.h} h</b> ${bar(x.h,max)}</td></tr>`).join('')}</table></div>
+      <p class="sm">Totals include assignments in draft rosters, which only managers can see. A staff member's own monthly total (My Roster) counts published assignments only.</p>`;
+  }
+  if(!util){
+    const w = Dd.week, rows = staff.map(u => ({u,h:hoursWeek(u.id,w)})).filter(x => x.u.status==='active' || x.h>0);
+    const asc = rows.filter(x => x.u.status==='active').sort((a,b) => a.h-b.h || a.u.name.localeCompare(b.u.name));
+    const third = asc[Math.min(2,asc.length-1)].h, low = asc.filter(x => x.h<=third), tied = low.filter(x => x.h===third).length;
+    const over = rows.filter(x => x.h>MAX_HOURS);
+    const desc = [...rows].sort((a,b) => b.h-a.h || a.u.name.localeCompare(b.u.name));
+    return head + `<div class="bar">${btn('Weekly view','dashWeekly',{},'pri')}${btn('Monthly view','dashMonthly')}<label>Roster week: <select data-chg="dashWeek">${wkOpt(w)}</select></label></div>
+      <div class="cols"><div class="box"><h2>Lowest workload this roster week</h2>
+        <table class="t"><tr><th>#</th><th>Staff member</th><th>Role qualification(s)</th><th>Assigned hours</th></tr>
+        ${low.map((x,i) => `<tr><td>${i+1}</td><td>${esc(x.u.name)} <small>${x.u.id}</small></td><td>${esc(qual(x.u))}</td><td><b>${x.h} h</b></td></tr>`).join('')}</table>
+        ${low.length>3 ? `<p class="sm"><b>${low.length} staff shown:</b> ${tied} staff are tied at ${third} h, the third-lowest value, so all staff tied at that value are included.</p>` : '<p class="sm">The three staff members with the lowest assigned hours.</p>'}</div>
+      <div class="box"><h2>Over ${MAX_HOURS} hours this roster week</h2><p style="font-size:26px;margin:0"><b>${over.length}</b> <small>of ${rows.length} staff</small></p>
+        <p class="sm">Staff whose assigned hours exceed ${MAX_HOURS} h are highlighted in the table below. One shift counts as 12 hours.</p>
+        ${S.rosters[w] ? '' : '<p class="sm"><b>No roster has been created for this week yet.</b></p>'}</div></div>
+      <h3>Assigned hours per staff member – roster week ${weekLbl(w)}</h3>
+      <div class="scroll" style="max-height:520px"><table class="t"><tr><th>Staff member</th><th>Staff ID</th><th>Role qualification(s)</th><th>Assigned hours (roster week)</th><th>Flag</th></tr>
+      ${desc.map(x => `<tr class="${x.h>MAX_HOURS?'over':''}"><td>${esc(x.u.name)}</td><td>${x.u.id}</td><td>${esc(qual(x.u))}</td><td><b>${x.h} h</b> ${bar(x.h,72)}</td><td>${x.h>MAX_HOURS?tag('OVER 40 H','red'):''}</td></tr>`).join('')}</table></div>`;
+  }
+  // utilisation
+  const w = Dd.uWeek, r = S.rosters[w], shifts = weekShifts(w).filter(sh => !Dd.uDay || sDate(sh)===Dd.uDay);
+  const slots = r ? r.slots.filter(s => shifts.includes(s.shiftId)) : [];
+  const total = shifts.length*12, active = S.ambulances.filter(a => a.status==='active').length;
+  const ambRows = S.ambulances.map(a => { const n = slots.filter(s => s.amb===a.no).length, hrs = n*11, pct = total ? hrs/total*100 : 0;
+    return `<tr class="${a.status!=='active'?'muted':''}"><td>${a.no}</td><td>${a.status==='active'?'Active':'Deactivated'}</td><td>${n}</td><td>${hrs} h</td><td>${total} h</td><td><b>${pct.toFixed(1)}%</b> <span class="hbar" style="width:${Math.round(pct*1.4)}px"></span></td></tr>`; }).join('');
+  const fleetRows = shifts.map(sh => { const n = new Set(slots.filter(s => s.shiftId===sh && s.amb).map(s => s.amb)).size; return `<tr><td>${sLbl(sh)}</td><td>${n}</td><td>${active}</td><td><b>${active ? (n/active*100).toFixed(1) : '0.0'}%</b></td></tr>`; }).join('');
+  const need = slots.filter(s => missing(s).length);
+  return head + `<div class="bar"><label>Roster week: <select data-chg="utilWeek">${wkOpt(w)}</select></label>
+      <label>Day: <select data-chg="utilDay">${opt('','Whole week',!Dd.uDay)}${[0,1,2,3,4,5,6].map(i => opt(addDays(w,i),fmtD(addDays(w,i)),Dd.uDay===addDays(w,i))).join('')}</select></label>
+      <span class="sm">Period: ${Dd.uDay ? fmtD(Dd.uDay) : weekLbl(w)} · ${shifts.length} shifts</span></div>
+    ${r ? '' : '<div class="note">No roster has been created for this week yet.</div>'}
+    <div class="cols"><div class="box"><h2>Scheduled utilisation per ambulance</h2>
+      <table class="t"><tr><th>Ambulance</th><th>Status</th><th>Rostered shifts</th><th>Scheduled in-service hours</th><th>Total shift hours</th><th>Utilisation</th></tr>${ambRows}</table>
+      <p class="sm">Utilisation = scheduled in-service hours ÷ total shift hours in the period, counting at most 11 in-service hours for each rostered 12-hour shift.</p></div>
+    <div class="box"><h2>Fleet utilisation per shift</h2><div class="scroll" style="max-height:480px"><table class="t"><tr><th>Roster shift</th><th>Rostered ambulances</th><th>Active fleet size</th><th>Fleet utilisation</th></tr>${fleetRows}</table></div>
+      <p class="sm">Fleet utilisation = rostered ambulances ÷ active fleet size.</p></div></div>
+    <div class="box"><h2>Roster slots requiring manpower</h2>
+    ${need.length ? `<div class="scroll" style="max-height:300px"><table class="t"><tr><th>Roster shift</th><th>Slot</th><th>Ambulance</th><th>Missing role(s)</th><th>Staff required</th><th></th></tr>
+      ${need.map(s => `<tr><td>${sLbl(s.shiftId)}</td><td>${slotNo(s)}</td><td>${s.amb||'not selected'}</td><td>${missTxt(s)}</td><td>${missing(s).length}</td><td>${btn('Open in Roster Management','rosOpen',{slot:s.id})}</td></tr>`).join('')}</table></div>`
+      : `<div class="flash ok" style="margin:0"><b>✓</b> All roster slots in the selected period are fully staffed.</div>`}</div>`;
+}
+
+/* =====================================================================
+   FleetPage  (UC-12)
+   ===================================================================== */
+function pgFleet(){
+  const F = UI.fleet;
+  const rows = S.ambulances.map(a => { const up = a.unavail.filter(sh => !started(sh)).sort((x,y) => gIdx(x)-gIdx(y));
+    return `<tr class="${a.status!=='active'?'muted':''}"><td><b>${esc(a.no)}</b></td><td>${STATION}</td><td>${a.status==='active'?tag('ACTIVE'):tag('DEACTIVATED','grey')}</td>
+      <td>${up.length ? up.map(sh => fmtShort(sDate(sh))+' '+sName(sh)).join(', ') : '—'}</td>
+      <td>${btn('Edit','flEdit',{no:a.no})}${a.status==='active' ? btn('Deactivate','flToggle',{no:a.no})+btn('Mark unavailable','flUnav',{no:a.no}) : btn('Reactivate','flToggle',{no:a.no})}</td></tr>`; }).join('');
+  let html = pageHead('Fleet','FleetPage','UC-12 Manage Ambulance Record (FR-27, FR-28)') +
+    `<div class="bar">${btn('+ Add ambulance','flAdd',{},'pri')}<span class="sm">Ambulances you are responsible for. Records are deactivated and reactivated, never deleted.</span></div>`;
+  if(F.form){ const f = F.form;
+    html += `<div class="box"><h2>${f.mode==='add' ? 'Add ambulance' : 'Edit ambulance – '+esc(f.orig)}</h2><div class="form">
+      <div class="fld ${f.err?'bad':''}"><span class="l">Ambulance number *</span><input id="fl-no" value="${esc(f.no)}">${f.err?`<em>${esc(f.err)}</em>`:''}</div>
+      <div class="fld"><span class="l">Availability</span><label class="ck"><input type="checkbox" id="fl-active" ${f.active?'checked':''}> Active (available to be rostered)</label></div></div>
+      <p>${btn(f.mode==='add'?'Create ambulance record':'Save changes','flSave',{},'pri')} ${btn('Cancel','flCancel')}</p></div>`; }
+  if(F.unav){ const u = F.unav, a = amb(u.no);
+    html += `<div class="box"><h2>Mark ${esc(u.no)} unavailable for roster shifts</h2>
+      <p><label>Roster week: <select data-chg="flUnavWeek">${[CUR,...PLAN].map(x => opt(x,weekLbl(x),x===u.week)).join('')}</select></label></p>
+      <table class="grid"><tr><th style="width:86px"></th>${[0,1,2,3,4,5,6].map(i => `<th>${fmtD(addDays(u.week,i))}</th>`).join('')}</tr>
+      ${['D','N'].map(t => `<tr><th>${t==='D'?'Day':'Night'}</th>${[0,1,2,3,4,5,6].map(i => { const sh = sid(u.week,i,t); return `<td><label><input type="checkbox" class="fl-sh" value="${sh}" ${a.unavail.includes(sh)?'checked':''} ${started(sh)?'disabled':''}> Unavailable</label></td>`; }).join('')}</tr>`).join('')}</table>
+      <p>${btn('Save unavailability','flUnavSave',{},'pri')} ${btn('Cancel','flCancel')}</p>
+      <p class="sm">An unavailable ambulance cannot be assigned to those shifts.</p></div>`; }
+  if(F.affected){ const af = F.affected;
+    html += `<div class="note red"><b>! Affected assignments.</b> ${esc(af.no)} already has staff assigned in ${af.rows.length} of the shift(s) marked unavailable. Amend them in Roster Management (draft roster: change the slot's ambulance or crew; published roster: amend the published assignments).
+      <table class="t" style="margin-top:6px"><tr><th>Roster shift</th><th>Roster</th><th>Slot</th><th>Assigned staff</th><th></th></tr>
+      ${af.rows.map(id => { const x = slotById(id); if(!x) return ''; return `<tr><td>${sLbl(x.slot.shiftId)}</td><td>${x.roster.status==='published'?'Published':'Draft'}</td><td>${slotNo(x.slot)}</td><td>${x.slot.asg.map(a => esc(uname(a.staffId))+' ('+a.roles.map(r=>ROLES[r]).join(' + ')+')').join(', ')}</td><td>${btn('Open in Roster Management','rosOpen',{slot:id})}</td></tr>`; }).join('')}</table></div>`; }
+  return html + `<table class="t"><tr><th>Ambulance number</th><th>Station</th><th>Status</th><th>Unavailable for shifts</th><th>Actions</th></tr>${rows}</table>
+    <p class="sm">Active ambulances: ${S.ambulances.filter(a=>a.status==='active').length} of ${S.ambulances.length}.</p>`;
+}
+
+/* =====================================================================
+   StaffRosterPage  (UC-09, UC-07, UC-13)
+   ===================================================================== */
+const crewTxt = slot => slot ? (slot.asg.filter(a => a.status==='confirmed').map(a => esc(uname(a.staffId))+' ('+a.roles.map(r=>ROLES[r]).join(' + ')+')').join(', ') || '—') : '—';
+function adjSlot(slot,d){ const g = gIdx(slot.shiftId)+d; for(const r of Object.values(S.rosters)){ if(r.status!=='published') continue; const s = r.slots.find(x => x.amb===slot.amb && gIdx(x.shiftId)===g); if(s) return s; } return null; }
+function asgDetails(slot,a){ return `<table class="kv"><tr><td>Date</td><td><b>${fmtD(sDate(slot.shiftId))} ${sDate(slot.shiftId).slice(0,4)}</b></td></tr><tr><td>Shift</td><td>${sName(slot.shiftId)} · starts ${sTimes(slot.shiftId).slice(0,5)}, ends ${sTimes(slot.shiftId).slice(6)}</td></tr>
+  <tr><td>Ambulance</td><td>${slot.amb}</td></tr><tr><td>Station</td><td>${STATION}</td></tr><tr><td>Assigned role</td><td>${a.roles.map(r=>ROLES[r]).join(' + ')}</td></tr></table>`; }
+function pgStaffRoster(){
+  const id = UI.staffId, w = UI.sr.week, r = S.rosters[w], pub = r && r.status==='published';
+  const pend = staffAsgs(id).filter(x => x.asg.status==='pending');
+  const mine = pub ? r.slots.filter(s => s.asg.some(a => a.staffId===id && a.status==='confirmed')).sort((a,b) => gIdx(a.shiftId)-gIdx(b.shiftId)) : [];
+  const ym = w.slice(0,7);
+  let html = pageHead('My Roster','StaffRosterPage','UC-09 View Own Roster (FR-24, FR-25) · UC-07 Reject Assignment (FR-16) · UC-13 Confirm Replacement Assignment (FR-18)');
+  if(pend.length) html += `<div class="box"><h2>Pending confirmation requests (${pend.length})</h2><p class="sm">You have been selected as a standby replacement. The vacancy is filled only when you confirm.</p>
+    ${pend.map(x => `<div class="card"><div class="top">${tag('AWAITING YOUR CONFIRMATION','dark')} <b>${sLbl(x.slot.shiftId)}</b> · ${x.slot.amb} · ${x.asg.roles.map(r=>ROLES[r]).join(' + ')}</div>${btn('Open request','srOpenReq',{slot:x.slot.id,asg:x.asg.id},'pri')}</div>`).join('')}</div>`;
+  html += `<div class="bar"><label>Roster week: <select data-chg="srWeek">${[HIST[2],CUR,...PLAN].map(x => opt(x, weekLbl(x)+(x===CUR?' (current week)':''), x===w)).join('')}</select></label>
+    <span class="sp"></span><span class="box" style="margin:0;padding:4px 10px">Total assigned hours – ${monthLbl(ym)}: <b>${hoursMonth(id,ym,true)} h</b></span>
+    <a class="btn" href="#/staff/monthly" style="text-decoration:none">Open monthly assignment view</a></div>
+    <h3>My assignments – ${weekLbl(w)} <small>(${mine.length*12} h this week)</small></h3>`;
+  if(!mine.length) html += `<div class="note"><b>There are no assignments for this week.</b> ${pub ? '' : 'The roster for this week has not been published.'}</div>`;
+  html += mine.map(s => { const a = s.asg.find(x => x.staffId===id && x.status==='confirmed'), st = started(s.shiftId);
+    return `<div class="card"><div class="top">${st ? tag('STARTED / COMPLETED','grey') : tag('UPCOMING')}</div>${asgDetails(s,a)}
+      <table class="kv"><tr><td>Crew on this ambulance</td><td>${crewTxt(s)}</td></tr><tr><td>Outgoing crew <small>(handing over to you)</small></td><td>${crewTxt(adjSlot(s,-1))}</td></tr><tr><td>Incoming crew <small>(taking over from you)</small></td><td>${crewTxt(adjSlot(s,1))}</td></tr></table>
+      ${st ? '' : `<p style="margin:8px 0 0">${btn('Reject assignment','srReject',{slot:s.id,asg:a.id})}</p>`}</div>`; }).join('');
+  return html + `<p class="sm">You can see only your own assignments, the crew on those assignments and your own assigned hours.</p>`;
+}
+
+/* =====================================================================
+   MonthlyAssignmentView  (UC-09 alt 3a, NFR-08)
+   ===================================================================== */
+function pgMonthly(){
+  const id = UI.staffId, ym = UI.mon.month, first = parse(ym+'-01');
+  const mine = {}; staffAsgs(id).filter(x => x.roster.status==='published' && x.asg.status==='confirmed' && x.slot.shiftId.startsWith(ym)).forEach(x => (mine[sDate(x.slot.shiftId)]||(mine[sDate(x.slot.shiftId)]=[])).push(x));
+  const count = Object.values(mine).reduce((n,v) => n+v.length, 0);
+  let d = addDays(ym+'-01', -((first.getDay()+6)%7)), rows = '';
+  for(let wk=0; wk<6; wk++){ let tds = '';
+    for(let i=0;i<7;i++){ const out = !d.startsWith(ym);
+      tds += `<td class="${out?'out':''}"><b>${parse(d).getDate()}</b>${out ? '' : (mine[d]||[]).sort((a,b)=>gIdx(a.slot.shiftId)-gIdx(b.slot.shiftId)).map(x => `<div class="s">${sName(x.slot.shiftId)} ${sTimes(x.slot.shiftId)}<br>${x.slot.amb} · ${x.asg.roles.map(r=>ROLES[r]).join(' + ')}</div>`).join('')}</td>`;
+      d = addDays(d,1); }
+    rows += `<tr>${tds}</tr>`; if(!d.startsWith(ym) && wk>=3) break; }
+  return pageHead('Monthly Assignments','MonthlyAssignmentView','UC-09 View Own Roster – monthly assignment view (FR-25, NFR-08)') +
+    `<div class="bar"><label>Calendar month: <select data-chg="monMonth">${['2026-10','2026-11','2026-12'].map(m => opt(m,monthLbl(m),m===ym)).join('')}</select></label>
+      <span class="sp"></span><span class="box" style="margin:0;padding:4px 10px">Total assigned hours – ${monthLbl(ym)}: <b>${count*12} h</b> (${count} shifts)</span>
+      <a class="btn" href="#/staff/roster" style="text-decoration:none">Back to weekly roster</a></div>
+    ${count ? '' : '<div class="note"><b>You have no assigned shifts in this month.</b></div>'}
+    <table class="cal"><tr>${['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(x => `<th>${x}</th>`).join('')}</tr>${rows}</table>
+    <p class="sm">Only your own assigned shifts are shown; the full team roster is not displayed. Station for all shifts: ${STATION}.</p>`;
+}
+
+/* =====================================================================
+   ACTIONS
+   ===================================================================== */
+const ACT = {}, CHG = {};
+document.addEventListener('click', e => { const el = e.target.closest('[data-act]'); if(!el || el.disabled) return; e.preventDefault(); UI.flash = null; ACT[el.dataset.act](el.dataset, el); });
+document.addEventListener('change', e => { const el = e.target.closest('[data-chg]'); if(el) CHG[el.dataset.chg](el.dataset, el); });
+
+/* ----- prototype controls ----- */
+ACT.asRole = ({r}) => go(r==='it' ? '#/it/accounts' : r==='staff' ? '#/staff/roster' : '#/manager/dashboard');
+CHG.persona = (d,el) => { UI.staffId = el.value; UI.flash = null; go('#/staff/roster'); };
+ACT.drawer = ({d}) => { UI.drawer = UI.drawer===d ? null : d; render(); };
+ACT.reset = () => { seed(); const dr = UI.drawer; UI = freshUI(); UI.drawer = dr; flash('info','Demo data has been reset.'); render(); };
+ACT.smsView = ({to}) => { const u = user(to); if(u.type==='manager') go('#/manager/roster'); else { UI.staffId = to; go('#/staff/roster'); } };
+ACT.modalClose = () => { UI.modal = null; if(UI.ros.cand) UI.ros.cand.pending = null; render(); };
+
+/* ----- UC-01 Manage User Account ----- */
+ACT.accNew = () => { UI.acc = {mode:'create', form:{type:'staff',name:'',id:'',roles:[],contact:'',start:''}, err:null, orig:null, hi:null}; render(); };
+ACT.accEdit = ({id}) => { const u = user(id); UI.acc = {mode:'edit', form:{type:u.type,name:u.name,id:u.id,roles:[...u.roles],contact:u.contact,start:u.start}, err:null, orig:id, hi:null}; render(); window.scrollTo(0,0); };
+ACT.accCancel = () => { UI.acc.mode = null; render(); };
+ACT.accSubmit = () => {
+  const a = UI.acc, f = {type:$('#f-type').value, name:$('#f-name').value.trim(), id:$('#f-id').value.trim().toUpperCase(), roles:$$('.f-role:checked').map(x=>x.value), contact:$('#f-contact').value.trim(), start:$('#f-start').value}, e = {};
+  if(f.type==='manager') f.roles = [];
+  if(!f.name) e.name = 'Required'; if(!f.id) e.id = 'Required'; if(f.type==='staff' && !f.roles.length) e.roles = 'Select at least one role qualification';
+  if(!f.contact) e.contact = 'Required'; if(!f.start) e.start = 'Required';
+  const miss = Object.keys(e).length>0;
+  if(f.id && S.users.some(u => u.id===f.id && u.id!==a.orig)) e.id = 'Staff ID '+f.id+' is already in use. Enter a different staff ID.';
+  if(Object.keys(e).length){ a.form = f; a.err = e; flash('err', miss ? 'The account was not saved. Complete the highlighted field(s).' : 'The account was not saved because the staff ID is already in use. Enter a different staff ID.'); return render(); }
+  const desc = x => `${x.name}; ${x.id}; ${x.type==='manager'?'Manager':x.roles.map(r=>ROLES[r]).join(', ')}; ${x.contact}; start ${x.start}`;
+  if(a.mode==='create'){
+    S.users.push(Object.assign({status:'active'}, f)); if(f.type==='staff'){ S.avail[f.id] = {}; S.prefs[f.id] = {}; }
+    audit('Account created','—',desc(f));
+    flash('ok',`Account created for <b>${esc(f.name)}</b> (${esc(f.id)}). The user can now log in. The change has been recorded in the audit log.`);
+  } else {
+    const u = user(a.orig), prev = desc(u);
+    if(f.id!==a.orig) renameId(a.orig,f.id);
+    Object.assign(u,f); audit('Account edited',prev,desc(f));
+    flash('ok',`Account <b>${esc(f.id)}</b> updated. The previous and new values have been recorded in the audit log.`);
+  }
+  UI.acc = {mode:null, form:null, err:null, orig:null, hi:f.id}; render();
+};
+function renameId(o,n){ for(const r of Object.values(S.rosters)) for(const s of r.slots) for(const a of s.asg) if(a.staffId===o) a.staffId = n;
+  ['avail','prefs','late'].forEach(k => { if(S[k][o]){ S[k][n] = S[k][o]; delete S[k][o]; } }); if(UI.staffId===o) UI.staffId = n; }
+ACT.accDeact = ({id}) => { const u = user(id); UI.modal = {title:'Deactivate account?', html:`<p>Deactivate the account of <b>${esc(u.name)}</b> (${esc(u.id)})?</p><p class="sm">The user will no longer be able to log in and will no longer be listed as an assignment candidate. Past records are retained.</p>`, btns:[{l:'Confirm deactivation',act:'accDeactOk',d:{id},pri:1},{l:'Cancel',act:'modalClose'}]}; render(); };
+ACT.accDeactOk = ({id}) => { deactivate(id); UI.modal = null; UI.acc.hi = id;
+  flash('ok',`Account <b>${esc(id)}</b> (${esc(uname(id))}) has been deactivated and the change recorded in the audit log. The user can no longer log in and is no longer listed as an assignment candidate; past records are retained. The manager has been notified of any assignments this user still holds.`); render(); };
+function deactivate(id,who){ const u = user(id); u.status = 'deactivated'; audit('Account deactivated','Active','Deactivated','—',who);
+  const held = staffAsgs(id).filter(x => !started(x.slot.shiftId));
+  if(held.length) sms(MGR,'Account deactivated',`${u.name} (${u.id}) has been deactivated and still holds ${held.length} assignment(s): ${held.slice(0,4).map(x => sLbl(x.slot.shiftId)+' ('+x.roster.status+')').join('; ')}${held.length>4?'; …':''}. Please amend the roster.`); }
+
+/* ----- UC-02 Manage Availability / UC-03 Set Job Preference ----- */
+CHG.avToggle = ({sh},el) => { const d = planDraft(); if(el.checked) d[sh] = true; else delete d[sh]; };
+ACT.avReset = () => { UI.plan.draft = null; render(); };
+ACT.avSubmit = () => {
+  const id = UI.staffId, d = planDraft(), saved = S.avail[id] || (S.avail[id] = {}), changed = [], late = [], kept = [];
+  // FR-04 / UC-02 step 6: published assignments the staff member holds are never modified by an availability change
+  const mine = new Set(staffAsgs(id).filter(x => x.roster.status==='published' && x.asg.status==='confirmed').map(x => x.slot.shiftId));
+  PLAN.forEach(w => { const sh = weekShifts(w), diff = sh.filter(x => !!d[x] !== !!saved[x]); if(!diff.length) return;
+    const before = sh.filter(x => saved[x]).length; diff.forEach(x => { if(d[x]) saved[x] = true; else { delete saved[x]; if(mine.has(x)) kept.push(x); } });
+    changed.push(w); const lt = isLate(w); if(lt){ late.push(w); (S.late[id]||(S.late[id]={}))[w] = true; }
+    audit('Availability '+(lt?'changed after cut-off (flagged late)':'submitted')+', week '+weekLbl(w), before+' shift(s) available', sh.filter(x => saved[x]).length+' shift(s) available'); });
+  UI.plan.draft = null;
+  if(!changed.length){ flash('info','No changes to submit. Your saved availability is unchanged.'); return render(); }
+  const keptTxt = kept.length ? ` You are <b>still assigned</b> to ${kept.map(sLbl).join(', ')}: changing availability does not change a published assignment. Only a manager can amend the roster.` : '';
+  if(late.length){
+    sms(MGR,'Late availability',`${uname(id)} (${id}) submitted or changed availability after the Wednesday cut-off for week ${late.map(weekLbl).join(', ')}. Flagged as late for your consideration.${kept.length ? ` They are no longer available for ${kept.map(sLbl).join(', ')} but remain assigned.` : ''} No published assignment was changed.`);
+    flash('warn',`Your availability has been saved and is visible to managers. <b>Week ${late.map(weekLbl).join(', ')}</b> was submitted or changed after the Wednesday cut-off, so it has been <b>flagged as late</b> and your manager has been notified to consider it case by case.${keptTxt || ' Published assignments are not changed.'}`);
+  } else flash('ok',`Your availability has been saved for ${changed.length} roster week(s) and is visible to managers.${keptTxt || ' No published assignment was changed.'}`);
+  render();
+};
+CHG.prefWeek = (d,el) => { UI.plan.prefWeek = el.value; UI.flash = null; render(); };
+ACT.prefSave = () => { const id = UI.staffId, w = UI.plan.prefWeek, shiftType = ($('input[name=p-type]:checked')||{}).value || '', station = $('#p-station').checked;
+  S.prefs[id] = S.prefs[id] || {};
+  if(!shiftType && !station){ delete S.prefs[id][w]; flash('ok',`No preference has been recorded for roster week <b>${weekLbl(w)}</b>.`); }
+  else { S.prefs[id][w] = {shiftType,station}; flash('ok',`Preferences saved for roster week <b>${weekLbl(w)}</b>. They will be shown to the manager during roster allocation.`); }
+  render(); };
+
+/* ----- UC-04 / UC-05 / UC-06 / UC-08 on RosterManagementPage ----- */
+CHG.rosWeek = (d,el) => { UI.ros = freshRos(el.value); UI.flash = null; render(); };
+ACT.rosShift = ({sh}) => { const R = UI.ros; R.shift = sh; R.slot = null; R.cand = null; render(); };
+ACT.rosSlot = ({slot}) => { const R = UI.ros, s = slotById(slot).slot; R.slot = slot; R.cand = null; const el = eligibleAmbs(s); R.ambPick = el.length ? el[0].no : null; render(); };
+ACT.rosOpen = ({slot}) => { const x = slotById(slot); UI.ros = freshRos(x.week); UI.ros.shift = x.slot.shiftId; go('#/manager/roster'); ACT.rosSlot({slot}); };
+ACT.rosAddSlot = () => { const R = UI.ros, s = {id:nid('SL'), shiftId:R.shift, amb:null, asg:[]}; S.rosters[R.week].slots.push(s); audit('Roster slot added','—',sLbl(R.shift)+', Slot '+slotNo(s)); ACT.rosSlot({slot:s.id}); };
+CHG.ambPick = (d,el) => { UI.ros.ambPick = el.value; };
+ACT.rosChangeAmb = ({slot}) => { const s = slotById(slot).slot, n = UI.ros.ambPick; if(!n) return render(); const prev = s.amb; s.amb = n; audit('Slot ambulance changed', prev+', '+sLbl(s.shiftId)+' Slot '+slotNo(s), n);
+  flash('ok',`Slot ${slotNo(s)} now uses ambulance <b>${n}</b> (previously ${prev}). Change saved and recorded in the audit log.`); ACT.rosSlot({slot}); };
+ACT.rosSave = () => { audit('Draft roster saved','—','Week '+weekLbl(UI.ros.week)); flash('ok',`The roster for <b>${weekLbl(UI.ros.week)}</b> has been saved as a draft. Roles still requiring manpower remain marked.`); render(); };
+
+function openCand(mode,slotId,pos,replace){
+  const {slot} = slotById(slotId), role = POS[pos], R = UI.ros;
+  if(mode==='build' && !slot.amb && !R.ambPick){ flash('err','No eligible ambulance is available for this shift, so the role cannot be filled. Select another shift or roster slot.'); return render(); }
+  const list = suitable(slot,role).map(u => u.id);
+  R.cand = {mode, slotId, pos:+pos, role, replace:replace||null, amb:slot.amb||R.ambPick, list, shown:list.slice(0,3), err:null, pending:null};
+  render(); const p = $('#candPanel'); if(p && p.scrollIntoView) p.scrollIntoView({block:'nearest'});
+}
+ACT.rosFill = ({slot,pos}) => openCand('build',slot,pos);
+ACT.rosReplace = ({slot,pos}) => openCand('build',slot,pos,positions(slotById(slot).slot)[pos].asg.id);
+ACT.rosReassign = ({slot,pos}) => openCand('reassign',slot,pos,positions(slotById(slot).slot)[pos].asg.id);
+ACT.rosStandby = ({slot,pos}) => openCand('standby',slot,pos);
+ACT.rosCandClose = () => { UI.ros.cand = null; render(); };
+function addCand(id){ const c = UI.ros.cand; if(c.shown.includes(id)) return; if(c.shown.length>=3) c.shown[2] = id; else c.shown.push(id); }
+ACT.rosCandAdd = ({id}) => { addCand(id || $('#candAdd').value); UI.ros.cand.err = null; render(); };
+ACT.rosCandDrop = ({id}) => { const c = UI.ros.cand; c.shown = c.shown.filter(x => x!==id); render(); };
+ACT.rosSelect = ({id}) => {
+  const c = UI.ros.cand, {slot} = slotById(c.slotId), roles = [c.role], dual = $('#dual-'+id); if(dual && dual.checked) roles.push(dual.value);
+  const v = validate(id,slot,roles);
+  if(v.errs.length){ c.err = {id, errs:v.errs}; return render(); }
+  c.err = null; c.pending = {id,roles};
+  if(v.warn){ UI.modal = {title:'Warning: over 40 assigned hours', html:`<p>This assignment would take <b>${esc(uname(id))}</b> from ${v.warn.from} h to <b>${v.warn.to} h</b> assigned in roster week ${weekLbl(weekOf(slot.shiftId))}, above the ${MAX_HOURS}-hour weekly limit.</p><p class="sm">This is a warning only; you may confirm the assignment or cancel and select another candidate.</p>`, btns:[{l:'Confirm assignment',act:'rosWarnOk',pri:1},{l:'Cancel',act:'modalClose'}]}; return render(); }
+  afterValid();
+};
+ACT.rosWarnOk = () => { UI.modal = null; afterValid(); };
+function afterValid(){ const c = UI.ros.cand;
+  if(c.mode==='reassign'){ const {slot} = slotById(c.slotId), old = slot.asg.find(a => a.id===c.replace);
+    UI.modal = {title:'Reason for change', html:`<p>Reassign <b>${ROLES[c.role]}</b>, Slot ${slotNo(slot)} (${slot.amb}), ${sLbl(slot.shiftId)}<br>from <b>${esc(uname(old.staffId))}</b> to <b>${esc(uname(c.pending.id))}</b>.</p>`, reason:'Reason for the change (required)', ctx:'reassign', btns:[{l:'Save change',act:'rosReasonOk',pri:1},{l:'Cancel',act:'modalClose'}]}; return render(); }
+  commit();
+}
+ACT.rosReasonOk = () => { const m = UI.modal, reason = $('#m-reason').value.trim();
+  if(!reason){ m.err = 'A reason is required before the change can be saved.'; m.val = ''; return render(); }
+  UI.modal = null; if(m.ctx==='reassign') commit(reason); else removePub(m.slot,m.asg,reason); };
+function commit(reason){
+  const c = UI.ros.cand, {slot} = slotById(c.slotId), u = user(c.pending.id), roleTxt = c.pending.roles.map(r=>ROLES[r]).join(' + ');
+  const where = `${sLbl(slot.shiftId)}, Slot ${slotNo(slot)} (${slot.amb||c.amb})`;
+  let old = null; if(c.replace){ old = slot.asg.find(a => a.id===c.replace); slot.asg = slot.asg.filter(a => a!==old); }
+  if(!slot.amb) slot.amb = c.amb;
+  slot.asg.push({id:nid('AS'), staffId:u.id, roles:c.pending.roles, status:c.mode==='standby'?'pending':'confirmed'});
+  if(c.mode==='build'){
+    audit(old?'Draft assignment replaced':'Draft assignment saved', old ? uname(old.staffId)+' – '+where : 'Role unassigned – '+where, `${u.name} – ${roleTxt}, ${where}`);
+    flash('ok',`<b>${esc(u.name)}</b> assigned as ${roleTxt}, ${where}${old?' (replacing '+esc(uname(old.staffId))+')':''}. The roster slot has been updated and the change recorded in the audit log.`);
+  } else if(c.mode==='reassign'){
+    audit('Published assignment reassigned', `${uname(old.staffId)} – ${ROLES[c.role]}, ${where}`, `${u.name} – ${roleTxt}, ${where}`, reason);
+    sms(old.staffId,'Roster amended',`Your assignment has changed: you are no longer assigned as ${ROLES[c.role]}, ${where}. Reason: ${reason}`);
+    sms(u.id,'Roster amended',`You have been assigned as ${roleTxt}, ${where}, ${sTimes(slot.shiftId)}, ${STATION}. Reason: ${reason}`);
+    flash('ok',`Assignment changed from <b>${esc(uname(old.staffId))}</b> to <b>${esc(u.name)}</b> (${roleTxt}, ${where}). The previous value, new value, acting user, time and reason have been recorded in the audit log, and both staff members have been notified by SMS.`);
+  } else {
+    audit('Standby replacement requested (pending confirmation)', 'Role unassigned – '+where, `${u.name} – ${roleTxt}, ${where}`);
+    sms(u.id,'Replacement offer',`You have been selected as standby replacement: ${roleTxt}, ${where}, ${sTimes(slot.shiftId)}, ${STATION}. Please confirm or decline in the system.`);
+    flash('ok',`A confirmation request has been sent by SMS to <b>${esc(u.name)}</b>. The role is shown as <b>awaiting confirmation</b>; the vacancy is not marked as filled until the staff member confirms.`);
+  }
+  UI.ros.cand = null; render();
+}
+ACT.rosRemove = ({slot,asg}) => { const s = slotById(slot).slot, a = s.asg.find(x => x.id===asg); s.asg = s.asg.filter(x => x!==a); UI.ros.cand = null;
+  audit('Draft assignment removed', `${uname(a.staffId)} – ${a.roles.map(r=>ROLES[r]).join(' + ')}, ${sLbl(s.shiftId)}, Slot ${slotNo(s)}`, 'Role requires manpower');
+  flash('ok',`<b>${esc(uname(a.staffId))}</b> removed from Slot ${slotNo(s)}. The role is now marked as <b>requiring manpower</b> and the change has been saved.`); render(); };
+ACT.rosRemovePub = ({slot,asg}) => { const s = slotById(slot).slot, a = s.asg.find(x => x.id===asg);
+  UI.modal = {title:'Remove from published roster', html:`<p>Remove <b>${esc(uname(a.staffId))}</b> (${a.roles.map(r=>ROLES[r]).join(' + ')}) from Slot ${slotNo(s)} (${s.amb}), ${sLbl(s.shiftId)} without selecting a replacement. The role will become unassigned.</p>`, reason:'Reason for the change (required)', ctx:'remove', slot, asg, btns:[{l:'Save change',act:'rosReasonOk',pri:1},{l:'Cancel',act:'modalClose'}]}; render(); };
+function removePub(slotId,asgId,reason,who){
+  const {slot,week} = slotById(slotId), a = slot.asg.find(x => x.id===asgId), where = `${sLbl(slot.shiftId)}, Slot ${slotNo(slot)} (${slot.amb})`, roleTxt = a.roles.map(r=>ROLES[r]).join(' + ');
+  slot.asg = slot.asg.filter(x => x!==a); UI.ros.cand = null; (slot.excl||(slot.excl=[])).push(a.staffId);
+  audit('Published assignment removed', `${uname(a.staffId)} – ${roleTxt}, ${where}`, 'Role unassigned', reason, who);
+  sms(a.staffId,'Roster amended',`Your assignment has changed: you are no longer assigned as ${roleTxt}, ${where}. Reason: ${reason}`);
+  const fc = fullCount(week,slot.shiftId);
+  flash(fc<MIN_AMB?'warn':'ok',`<b>${esc(uname(a.staffId))}</b> has been removed and notified by SMS; the change and its reason are recorded in the audit log. The ${roleTxt} role is now <b>unassigned</b>.${fc<MIN_AMB ? ` Only ${fc} of ${MIN_AMB} ambulances are fully staffed in this shift, so the <b>shortfall and missing role are flagged</b> on the roster.` : ''} To fill the role, use <b>Find standby replacement</b>.`);
+  render();
+}
+ACT.rosWithdraw = ({slot,asg}) => { const s = slotById(slot).slot, a = s.asg.find(x => x.id===asg), where = `${sLbl(s.shiftId)}, Slot ${slotNo(s)} (${s.amb})`, role = a.roles[0];
+  s.asg = s.asg.filter(x => x!==a); (s.excl||(s.excl=[])).push(a.staffId);
+  audit('Standby request withdrawn', `${uname(a.staffId)} – pending, ${where}`, 'Role unassigned');
+  sms(a.staffId,'Replacement offer withdrawn',`The request for you to cover ${ROLES[role]}, ${where} has been withdrawn. No action is needed.`);
+  flash('ok',`The confirmation request to <b>${esc(uname(a.staffId))}</b> has been withdrawn and the staff member notified. Select a different eligible standby candidate below.`);
+  openCand('standby',slot,positions(s).find(p => p.role===role && !p.asg).i); };
+ACT.rosPublish = () => {
+  const R = UI.ros, w = R.week, fail = [];
+  weekShifts(w).forEach(sh => { const n = fullCount(w,sh); if(n>=MIN_AMB) return;
+    const sl = shiftSlots(w,sh).filter(s => !fully(s)), agg = {}; sl.forEach(s => missing(s).forEach(p => agg[p.role] = (agg[p.role]||0)+1));
+    const noAmb = sl.filter(s => !s.amb).length, badAmb = sl.filter(s => s.amb && !ambOk(s)).map(s => s.amb);
+    const parts = [Object.entries(agg).map(([r,k]) => ROLES[r]+' ×'+k).join(', ')]; if(noAmb) parts.push(noAmb+' slot(s) without an ambulance'); if(badAmb.length) parts.push('unavailable ambulance: '+badAmb.join(', '));
+    if(sl.length<=2) parts.push(sl.map(s => 'Slot '+slotNo(s)+(s.amb?' ('+s.amb+')':'')).join(', '));
+    fail.push({sh, n, detail:parts.filter(Boolean).join(' · ')}); });
+  if(fail.length){ R.pubFail = fail; return render(); }
+  R.pubFail = null; S.rosters[w].status = 'published'; R.cand = null;
+  audit('Roster published','Draft','Published, week '+weekLbl(w));
+  flash('ok',`The roster for <b>${weekLbl(w)}</b> has been <b>published</b> and the event recorded in the audit log. Each assignment is now visible to the staff member assigned.`); render();
+};
+
+/* ----- UC-10 / UC-11 ManagerDashboardPage ----- */
+ACT.dashWeekly = () => { UI.dash.monthly = false; render(); };
+ACT.dashMonthly = () => { UI.dash.monthly = true; render(); };
+CHG.dashWeek = (d,el) => { UI.dash.week = el.value; render(); };
+CHG.dashMonth = (d,el) => { UI.dash.month = el.value; render(); };
+CHG.utilWeek = (d,el) => { UI.dash.uWeek = el.value; UI.dash.uDay = ''; render(); };
+CHG.utilDay = (d,el) => { UI.dash.uDay = el.value; render(); };
+
+/* ----- UC-12 FleetPage ----- */
+ACT.flAdd = () => { UI.fleet = {form:{mode:'add',no:'',active:true}, unav:null, affected:null}; render(); };
+ACT.flEdit = ({no}) => { UI.fleet = {form:{mode:'edit',orig:no,no,active:amb(no).status==='active'}, unav:null, affected:null}; render(); };
+ACT.flCancel = () => { UI.fleet.form = null; UI.fleet.unav = null; render(); };
+ACT.flSave = () => { const F = UI.fleet, f = F.form, no = $('#fl-no').value.trim().toUpperCase(), active = $('#fl-active').checked;
+  f.no = no; f.active = active;
+  if(!no){ f.err = 'Enter the ambulance number'; flash('err','The ambulance record was not saved.'); return render(); }
+  if(S.ambulances.some(a => a.no===no && a.no!==f.orig)){ f.err = 'Ambulance number '+no+' already exists'; flash('err','The ambulance record was not saved.'); return render(); }
+  if(f.mode==='add'){ S.ambulances.push({no, status:active?'active':'deactivated', unavail:[]}); audit('Ambulance record added','—',no+' ('+(active?'active':'deactivated')+')');
+    flash('ok',`Ambulance <b>${esc(no)}</b> has been added and the change recorded in the audit log. The list of active ambulances has been updated.`); }
+  else { const a = amb(f.orig), prev = a.no+' ('+a.status+')'; if(no!==f.orig) for(const r of Object.values(S.rosters)) for(const s of r.slots) if(s.amb===f.orig) s.amb = no;
+    a.no = no; a.status = active?'active':'deactivated'; audit('Ambulance record edited',prev,no+' ('+a.status+')');
+    flash('ok',`Ambulance <b>${esc(no)}</b> has been updated (${a.status}) and the change recorded in the audit log.`); }
+  F.form = null; render(); };
+ACT.flToggle = ({no}) => { const a = amb(no), prev = a.status; a.status = prev==='active'?'deactivated':'active'; audit('Ambulance '+(a.status==='active'?'reactivated':'deactivated'),prev,a.status); UI.fleet.form = null;
+  flash('ok',`Ambulance <b>${esc(no)}</b> has been <b>${a.status==='active'?'reactivated':'deactivated'}</b> and the change recorded in the audit log. ${a.status==='active' ? 'It can be assigned to roster slots again.' : 'It can no longer be assigned to roster slots.'}`); render(); };
+ACT.flUnav = ({no}) => { UI.fleet = {form:null, unav:{no,week:PLAN[0]}, affected:null}; render(); };
+CHG.flUnavWeek = (d,el) => { UI.fleet.unav.week = el.value; render(); };
+ACT.flUnavSave = () => { const F = UI.fleet, {no,week} = F.unav, a = amb(no), sel = $$('.fl-sh:checked').map(x => x.value);
+  const before = a.unavail.filter(sh => weekOf(sh)===week), added = sel.filter(sh => !before.includes(sh));
+  a.unavail = a.unavail.filter(sh => weekOf(sh)!==week || started(sh)).concat(sel.filter(sh => !started(sh) || before.includes(sh)));
+  a.unavail = [...new Set(a.unavail)];
+  audit('Ambulance unavailability saved – '+no, before.length ? before.map(sLbl).join('; ') : 'None in week '+weekLbl(week), sel.length ? sel.map(sLbl).join('; ') : 'None');
+  const rows = []; for(const r of Object.values(S.rosters)) for(const s of r.slots) if(s.amb===no && added.includes(s.shiftId) && s.asg.length) rows.push(s.id);
+  F.unav = null; F.affected = rows.length ? {no,rows} : null;
+  flash(rows.length?'warn':'ok',`Unavailability saved for <b>${esc(no)}</b> (${sel.length} shift(s) in week ${weekLbl(week)}) and recorded in the audit log. The ambulance cannot be assigned to those shifts.${rows.length ? ' Staff were already assigned to this ambulance in some of those shifts; the affected assignments are listed below.' : ''}`); render(); };
+
+/* ----- UC-09 / UC-07 / UC-13 StaffRosterPage, MonthlyAssignmentView ----- */
+CHG.srWeek = (d,el) => { UI.sr.week = el.value; UI.flash = null; render(); };
+CHG.monMonth = (d,el) => { UI.mon.month = el.value; render(); };
+ACT.srReject = ({slot,asg}) => { const x = slotById(slot), a = x.slot.asg.find(y => y.id===asg);
+  UI.modal = {title:'Before you reject this assignment', html:`<p><b>Warning:</b> please discuss this job with your manager before proceeding with the rejection.</p>${asgDetails(x.slot,a)}`, btns:[{l:'I have discussed it – proceed',act:'srRejectGo',d:{slot,asg},pri:1},{l:'Cancel – keep assignment',act:'srRejectCancel'}]}; render(); };
+ACT.srRejectCancel = () => { UI.modal = null; flash('info','Rejection cancelled. Your assignment is unchanged.'); render(); };
+ACT.srRejectGo = ({slot,asg}) => { const x = slotById(slot), a = x.slot.asg.find(y => y.id===asg);
+  UI.modal = {title:'Reject assignment', html:asgDetails(x.slot,a), reason:'Reason for rejecting this assignment (required)', slot, asg, btns:[{l:'Submit rejection',act:'srRejectSubmit',pri:1},{l:'Cancel – keep assignment',act:'srRejectCancel'}]}; render(); };
+ACT.srRejectSubmit = () => { const m = UI.modal, reason = $('#m-reason').value.trim();
+  if(!reason){ m.err = 'Enter a reason. The rejection is not submitted until a reason is entered.'; m.val = ''; return render(); }
+  UI.modal = null; doReject(m.slot,m.asg,reason);
+  flash('ok','Your rejection has been submitted. The role is now unassigned and your manager has been notified by SMS.'); render(); };
+function doReject(slotId,asgId,reason){ const {slot,week} = slotById(slotId), a = slot.asg.find(x => x.id===asgId), u = user(a.staffId), roleTxt = a.roles.map(r=>ROLES[r]).join(' + '), where = `${sLbl(slot.shiftId)}, Slot ${slotNo(slot)} (${slot.amb})`;
+  slot.asg = slot.asg.filter(x => x!==a); (slot.excl||(slot.excl=[])).push(a.staffId);
+  audit('Assignment rejected by staff', `${u.name} – ${roleTxt}, ${where}`, 'Role unassigned', reason, u.name+' (Staff '+u.id+')');
+  const fc = fullCount(week,slot.shiftId);
+  sms(MGR,'Assignment rejected',`${u.name} rejected ${roleTxt}, ${where}. Reason: ${reason}.${fc<MIN_AMB ? ` Shift now has ${fc} of ${MIN_AMB} fully staffed ambulances; shortfall flagged on the roster.` : ''}`); }
+ACT.srOpenReq = ({slot,asg}) => { const x = slotById(slot), a = x.slot.asg.find(y => y.id===asg);
+  UI.modal = {title:'Replacement request', html:`<p>You have been selected as a standby replacement for the following assignment.</p>${asgDetails(x.slot,a)}<p class="sm">Crew on this ambulance: ${crewTxt(x.slot)}</p>`, btns:[{l:'Confirm assignment',act:'srConfirm',d:{slot,asg},pri:1},{l:'Decline request',act:'srDecline',d:{slot,asg}},{l:'Close',act:'modalClose'}]}; render(); };
+ACT.srConfirm = ({slot,asg}) => { const x = slotById(slot), a = x.slot.asg.find(y => y.id===asg), where = `${sLbl(x.slot.shiftId)}, Slot ${slotNo(x.slot)} (${x.slot.amb})`, roleTxt = a.roles.map(r=>ROLES[r]).join(' + ');
+  a.status = 'confirmed'; UI.modal = null; UI.sr.week = x.week;
+  audit('Replacement assignment confirmed', `${uname(a.staffId)} – pending, ${where}`, `${uname(a.staffId)} – ${roleTxt} (confirmed); vacancy filled`);
+  sms(MGR,'Assignment response',`${uname(a.staffId)} CONFIRMED the replacement assignment: ${roleTxt}, ${where}. The vacancy is now filled.`);
+  flash('ok',`Assignment confirmed: ${roleTxt}, ${where}. The vacancy has been marked as filled, your manager has been notified, and the assignment now appears in your roster below.`); render(); };
+ACT.srDecline = ({slot,asg}) => { const x = slotById(slot), a = x.slot.asg.find(y => y.id===asg), where = `${sLbl(x.slot.shiftId)}, Slot ${slotNo(x.slot)} (${x.slot.amb})`, roleTxt = a.roles.map(r=>ROLES[r]).join(' + ');
+  x.slot.asg = x.slot.asg.filter(y => y!==a); UI.modal = null; (x.slot.excl||(x.slot.excl=[])).push(a.staffId);
+  audit('Replacement request declined', `${uname(a.staffId)} – pending, ${where}`, 'Role unassigned');
+  sms(MGR,'Assignment response',`${uname(a.staffId)} DECLINED the replacement request: ${roleTxt}, ${where}. The vacancy remains unfilled.`);
+  flash('info','You have declined the request. The role remains unassigned and your manager has been notified.'); render(); };
+
+/* =====================================================================
+   PROTOTYPE-ONLY: scenario guide, SMS outbox, audit log
+   ===================================================================== */
+const asStaff = (id,p) => { UI.staffId = id; go('#/staff/'+p); };
+const me = () => S.demo.me;
+function openRoster(w,sh,i){ UI.ros = freshRos(w); if(sh) UI.ros.shift = sh; go('#/manager/roster'); if(i!=null) ACT.rosSlot({slot:shiftSlots(w,sh)[i].id}); }
+const vac = () => { for(const sl of S.rosters[PLAN[0]].slots){ const p = positions(sl).find(p => !p.asg); if(p) return {sl,p}; } return null; };
+function toVacCands(){ const v = vac(); openRoster(PLAN[0],v.sl.shiftId); ACT.rosSlot({slot:v.sl.id}); ACT.rosFill({slot:v.sl.id,pos:v.p.i}); }
+function pickCand(warn){ const c = UI.ros.cand, {slot} = slotById(c.slotId); const id = c.list.find(x => { const v = validate(x,slot,[c.role]); return !v.errs.length && !!v.warn===warn; }); addCand(id); return id; }
+function fillAcc(f){ $('#f-type').value = f.type||'staff'; $('#f-name').value = f.name; $('#f-id').value = f.id; $$('.f-role').forEach(x => x.checked = (f.roles||[]).includes(x.value)); $('#f-contact').value = f.contact; $('#f-start').value = f.start; }
+const mySlot = sh => { const x = staffAsgs(me()).find(y => y.slot.shiftId===sh && y.asg.status==='confirmed'); return {slot:x.slot.id, asg:x.asg.id}; };
+const FRI_N = sid(CUR,4,'N'), SAT_D = sid(CUR,5,'D'), SAT_N = sid(CUR,5,'N'), SUN_D = sid(CUR,6,'D'), SUN_N = sid(CUR,6,'N');
+const pendSlot = () => S.rosters[CUR].slots.find(s => s.asg.some(a => a.status==='pending'));
+function simVacancy(){ const m = mySlot(FRI_N); doReject(m.slot,m.asg,'Unwell'); const sl = slotById(m.slot).slot; openRoster(CUR,FRI_N,shiftSlots(CUR,FRI_N).indexOf(sl)); return sl; }
+const vacPos = sl => positions(sl).find(p => !p.asg).i;
+// (simulated) the manager fills the last role requiring manpower in the 23–29 Nov draft and publishes it (UC-04, UC-05)
+function publishPlan0(){ const v = vac(), who = uname(MGR)+' (Manager '+MGR+')', id = suitable(v.sl,v.p.role).map(u => u.id).find(x => !validate(x,v.sl,[v.p.role]).warn);
+  v.sl.asg.push({id:nid('AS'), staffId:id, roles:[v.p.role], status:'confirmed'});
+  audit('Draft assignment saved', `Role unassigned – ${sLbl(v.sl.shiftId)}, Slot ${slotNo(v.sl)} (${v.sl.amb})`, `${uname(id)} – ${ROLES[v.p.role]}, ${sLbl(v.sl.shiftId)}, Slot ${slotNo(v.sl)} (${v.sl.amb})`, '—', who);
+  S.rosters[PLAN[0]].status = 'published'; audit('Roster published','Draft','Published, week '+weekLbl(PLAN[0]),'—',who); }
+const NEWACC = {name:'Nadia Yusof', id:'S1074', roles:['paramedic'], contact:'+65 8111 2222', start:'2026-12-01'};
+
+/* ---------- figure highlight (screenshots only, not part of the system) ----------
+   A scenario step may name what it produces in `hl`: the message, dialog, panel or row that appears.
+   In ?shot= mode those parts are outlined so each report figure shows at a glance what the step did.
+   A target is a CSS selector, a function returning element(s), or {union:target} for one outline around a group. */
+const uniq = a => [...new Set([].concat(a).filter(Boolean))];
+const HL = {
+  modal: () => $$('#modal .mbox'),
+  flash: () => $$('#main .flash'),
+  box: t => () => $$('#main .box').filter(b => { const h = b.querySelector('h2'); return h && h.textContent.startsWith(t); }),
+  note: t => () => $$('#main .note').filter(n => n.textContent.includes(t)),
+  card: t => () => $$('#main .card').filter(c => c.textContent.includes(t)),
+  row: t => () => $$('#main tr').filter(r => r.cells[0] && r.cells[0].tagName==='TD' && r.cells[0].textContent.trim().startsWith(t)),
+  rowOf: sel => () => $$(sel).map(e => e.closest('tr')),
+  tagRow: t => () => $$('#main .box .tag').filter(e => e.textContent===t).map(e => e.closest('tr')),
+  pos: i => () => { const b = HL.box('Slot ')()[0]; return b ? b.querySelectorAll('table.t tr')[i+1] : null; }
+};
+function hlEls(t){ return uniq(typeof t==='function' ? t() : $$(t)); }
+function highlight(targets){
+  $$('.hl').forEach(e => e.remove());
+  const groups = [], missing = [];
+  [].concat(targets||[]).forEach((t,i) => { const els = hlEls(t && t.union ? t.union : t); if(!els.length) return missing.push(i); if(t.union) groups.push(els); else els.forEach(e => groups.push([e])); });
+  groups.flat().forEach(e => { const sc = e.closest('.scroll'); if(!sc) return;          // bring a row inside a scrolling list into view
+    const r = e.getBoundingClientRect(), s = sc.getBoundingClientRect(); sc.scrollTop += r.top - s.top - (sc.clientHeight - r.height)/2; });
+  groups.forEach(g => { let x1 = 1e9, y1 = 1e9, x2 = -1e9, y2 = -1e9;
+    g.forEach(e => { const r = e.getBoundingClientRect(); x1 = Math.min(x1,r.left); y1 = Math.min(y1,r.top); x2 = Math.max(x2,r.right); y2 = Math.max(y2,r.bottom); });
+    const sc = g[0].closest('.scroll'); if(sc){ const s = sc.getBoundingClientRect(); y1 = Math.max(y1,s.top); y2 = Math.min(y2,s.bottom); }
+    const pad = g.length===1 && /^(TR|TD)$/.test(g[0].tagName) ? 1 : 4, d = document.createElement('div'); d.className = 'hl';
+    d.style.cssText = `left:${x1+scrollX-pad-4}px;top:${y1+scrollY-pad-4}px;width:${x2-x1+2*pad+8}px;height:${y2-y1+2*pad+8}px`; document.body.appendChild(d); });
+  return missing;
+}
+
+const SC = [
+ {uc:'UC-01 Manage User Account', id:'uc01-main', k:'Main', t:'Create a new account', steps:[
+   {c:'IT Administrator opens the user accounts page and selects Create Account.', hl:HL.box('Create Account'), f(){ go('#/it/accounts'); ACT.accNew(); }},
+   {c:'Enters full name, staff ID, role qualification(s), contact details and start date.', hl:HL.box('Create Account'), f(){ fillAcc(NEWACC); }},
+   {c:'System checks the fields and that the staff ID is unused, saves the account, records it in the audit log and shows a confirmation.', hl:[HL.flash,'#main tr.hi'], f(){ ACT.accSubmit(); }}]},
+ {uc:'UC-01 Manage User Account', id:'uc01-1a', k:'Alt 1a', t:'Edit an existing account', steps:[
+   {c:'IT Administrator selects an account and opens it for editing.', hl:HL.box('Edit Account'), f(){ go('#/it/accounts'); ACT.accEdit({id:'S1022'}); }},
+   {c:'Changes the contact details and adds a role qualification, then saves. Previous and new values go to the audit log.', hl:[HL.flash,'#main tr.hi'], f(){ $('#f-contact').value = '+65 8222 3333'; $$('.f-role').forEach(x => { if(x.value==='driver') x.checked = true; }); ACT.accSubmit(); }}]},
+ {uc:'UC-01 Manage User Account', id:'uc01-1b', k:'Alt 1b', t:'Deactivate an account', steps:[
+   {c:'IT Administrator selects Deactivate; the system asks for confirmation.', hl:HL.modal, f(){ go('#/it/accounts'); ACT.accDeact({id:'S1045'}); }},
+   {c:'After confirmation the account is deactivated and logged; the user cannot log in or be a candidate, and the manager is notified of assignments still held.', hl:[HL.flash,'#main tr.hi'], f(){ ACT.accDeactOk({id:'S1045'}); }},
+   {c:'On the manager\'s roster the roles still held by the deactivated user are flagged and no longer count as filled, so the manager can amend them (UC-04 or UC-06).', hl:[HL.note('Deactivated account'),HL.tagRow('ACCOUNT DEACTIVATED')], f(){ const x = staffAsgs('S1045').find(y => !started(y.slot.shiftId)); ACT.rosOpen({slot:x.slot.id}); }}]},
+ {uc:'UC-01 Manage User Account', id:'uc01-3a', k:'Alt 3a', t:'Required field missing', steps:[
+   {c:'IT Administrator submits the form with required fields missing; the system highlights them and does not save.', hl:[HL.flash,'#main .fld.bad'], f(){ go('#/it/accounts'); ACT.accNew(); fillAcc(Object.assign({},NEWACC,{name:'',roles:[],start:''})); ACT.accSubmit(); }}]},
+ {uc:'UC-01 Manage User Account', id:'uc01-3b', k:'Alt 3b', t:'Staff ID already in use', steps:[
+   {c:'IT Administrator enters a staff ID that already exists; the system rejects the entry and asks for a different staff ID.', hl:[HL.flash,'#main .fld.bad'], f(){ go('#/it/accounts'); ACT.accNew(); fillAcc(Object.assign({},NEWACC,{id:'S1001'})); ACT.accSubmit(); }}]},
+
+ {uc:'UC-02 Manage Availability', id:'uc02-main', k:'Main', t:'Submit availability before the cut-off', steps:[
+   {c:'Staff member opens the availability page; saved availability and the day/night shifts of the five-week planning period are shown.', f(){ asStaff(me(),'planning'); }},
+   {c:'Staff member ticks the shifts they can work in a week whose Wednesday cut-off has not passed.', hl:() => $$('#main .wk')[2], f(){ const d = planDraft(); [sid(PLAN[2],0,'N'),sid(PLAN[2],1,'N'),sid(PLAN[2],3,'N'),sid(PLAN[2],5,'N')].forEach(sh => d[sh] = true); render(); }},
+   {c:'Staff member submits; nothing is late, so the system saves it, logs it, makes it visible to managers and confirms.', hl:HL.flash, f(){ ACT.avSubmit(); }}]},
+ {uc:'UC-02 Manage Availability', id:'uc02-5a', k:'Alt 5a', t:'Change after the Wednesday cut-off (late)', steps:[
+   {c:'(After UC-05) the manager has published the roster for 23–29 Nov, so the staff member\'s assignments in that week are marked ASSIGNED. The staff member unticks Tue 24 Nov Day, an assigned shift in a week whose cut-off (Wed 18 Nov) has passed.', hl:() => $('input[data-sh="'+sid(PLAN[0],1,'D')+'"]').closest('td'), f(){ publishPlan0(); asStaff(me(),'planning'); const d = planDraft(); delete d[sid(PLAN[0],1,'D')]; render(); }},
+   {c:'On submit the system saves and logs the change, flags the week as late and notifies the manager. The published assignment is not changed.', hl:[HL.flash,'#main .wk:first-child h3'], f(){ ACT.avSubmit(); }},
+   {c:'The assignment is still on the staff member\'s roster; only a manager can amend it (UC-06).', hl:HL.card(fmtD(addDays(PLAN[0],1))), f(){ UI.sr.week = PLAN[0]; asStaff(me(),'roster'); }}]},
+
+ {uc:'UC-03 Set Job Preference', id:'uc03-main', k:'Main', t:'Save shift type and station preference', steps:[
+   {c:'Staff member opens the preferences tab and selects a roster week.', hl:HL.box('Set preference'), f(){ UI.plan.prefWeek = PLAN[1]; asStaff(me(),'planning/preferences'); }},
+   {c:'Chooses a preferred shift type and station and saves; the system stores the preference.', hl:[HL.flash,HL.row(weekLbl(PLAN[1]))], f(){ $('input[name=p-type][value=night]').checked = true; $('#p-station').checked = true; ACT.prefSave(); }}]},
+ {uc:'UC-03 Set Job Preference', id:'uc03-2a', k:'Alt 2a', t:'No preference', steps:[
+   {c:'Staff member leaves both fields blank and saves; the system records no preference for that week.', hl:[HL.flash,HL.row(weekLbl(PLAN[2]))], f(){ UI.plan.prefWeek = PLAN[2]; asStaff(me(),'planning/preferences'); ACT.prefSave(); }}]},
+
+ {uc:'UC-04 Build Weekly Roster', id:'uc04-main', k:'Main', t:'Assign staff to a role in a draft roster', steps:[
+   {c:'Manager opens roster management and selects the week 23–29 Nov. The draft roster is retrieved, showing slots, ambulances, assigned staff and roles requiring manpower.', hl:HL.rowOf('#main table.t .need'), f(){ openRoster(PLAN[0]); }},
+   {c:'Manager selects the shift and the roster slot that still requires manpower; eligible ambulances and crew roles are shown.', hl:HL.box('Slot '), f(){ const v = vac(); ACT.rosShift({sh:v.sl.shiftId}); ACT.rosSlot({slot:v.sl.id}); }},
+   {c:'Manager chooses the Paramedic role to fill; up to three suitable candidates appear side by side with availability, assigned hours, preference and location.', hl:'#candPanel', f(){ const v = vac(); ACT.rosFill({slot:v.sl.id,pos:v.p.i}); }},
+   {c:'Manager selects a candidate; the rules pass, so the assignment is saved, the slot updated and the change logged.', hl:[HL.flash,'#main tr.sel'], f(){ ACT.rosSelect({id:pickCand(false)}); }},
+   {c:'Manager saves the roster as a draft.', hl:HL.flash, f(){ ACT.rosSave(); }}]},
+ {uc:'UC-04 Build Weekly Roster', id:'uc04-new', k:'Main (step 2–5)', t:'No draft exists: empty draft created, ambulance selected', steps:[
+   {c:'Manager selects a week with no roster; the system creates and displays an empty draft roster.', hl:HL.note('No draft roster existed'), f(){ openRoster(PLAN[1]); }},
+   {c:'Manager selects a slot; the system lists ambulances that are active, available and not used in another slot of the shift.', hl:[HL.note('No draft roster existed'),'#main .box.dash'], f(){ ACT.rosSlot({slot:shiftSlots(PLAN[1],UI.ros.shift)[0].id}); }},
+   {c:'Manager selects an ambulance and the Driver role; suitable candidates are displayed.', hl:'#candPanel', f(){ ACT.rosFill({slot:UI.ros.slot,pos:0}); }}]},
+ {uc:'UC-04 Build Weekly Roster', id:'uc04-1a', k:'Alt 1a', t:'Selected week is already published', steps:[
+   {c:'Manager selects a week whose roster is published; it is displayed and changes are only possible by amending it.', hl:HL.note('This roster has been published'), f(){ openRoster(CUR,SAT_D); }}]},
+ {uc:'UC-04 Build Weekly Roster', id:'uc04-4a', k:'Alt 4a', t:'No eligible ambulance for the shift', steps:[
+   {c:'Manager adds a slot to Sun 29 Nov Night; every active ambulance is unavailable or already used, so the system reports that no eligible ambulance is available.', hl:HL.flash, f(){ openRoster(PLAN[0],sid(PLAN[0],6,'N')); ACT.rosAddSlot(); }}]},
+ {uc:'UC-04 Build Weekly Roster', id:'uc04-5a', k:'Alt 5a', t:'Remove or replace staff in the draft', steps:[
+   {c:'Manager selects a slot with assigned roles in the draft roster.', hl:HL.box('Slot '), f(){ openRoster(PLAN[0],sid(PLAN[0],1,'D'),1); }},
+   {c:'Manager removes the care assistant; the role is marked as requiring manpower and the change is saved.', hl:[HL.flash,HL.rowOf('#main .box .need')], f(){ const s = slotById(UI.ros.slot).slot; ACT.rosRemove({slot:s.id,asg:positions(s)[1].asg.id}); }},
+   {c:'Manager chooses Replace on the driver; the flow continues with the candidate display.', hl:'#candPanel', f(){ ACT.rosReplace({slot:UI.ros.slot,pos:0}); }}]},
+ {uc:'UC-04 Build Weekly Roster', id:'uc04-8a', k:'Alt 8a', t:'Assignment breaks a rule (blocked)', steps:[
+   {c:'Manager looks up a staff member who works the adjacent shift and adds them to the comparison.', hl:() => $$('#candPanel .cand').filter(c => c.textContent.includes('ADDED MANUALLY')), f(){ toVacCands(); const sl = slotById(UI.ros.cand.slotId).slot, g = gIdx(sl.shiftId); const x = S.users.find(u => u.roles.includes('paramedic') && staffAsgs(u.id).some(y => Math.abs(gIdx(y.slot.shiftId)-g)===1) && !staffAsgs(u.id).some(y => gIdx(y.slot.shiftId)===g)); addCand(x.id); UI.sim = x.id; render(); }},
+   {c:'Manager selects them; the 12-hour rest rule is broken, so the assignment is not saved and the reason is shown.', hl:HL.flash, f(){ ACT.rosSelect({id:UI.sim}); }},
+   {c:'Manager tries a driver who is not paramedic-qualified; the qualification rule blocks the assignment.', hl:HL.flash, f(){ const id = S.demo.D[7]; addCand(id); render(); ACT.rosSelect({id}); }}]},
+ {uc:'UC-04 Build Weekly Roster', id:'uc04-8b', k:'Alt 8b', t:'Over 40 hours: warning, confirm or cancel', steps:[
+   {c:'Manager selects a candidate whose hours would exceed 40; the system warns without blocking.', hl:HL.modal, f(){ toVacCands(); ACT.rosSelect({id:pickCand(true)}); }},
+   {c:'Manager confirms and the assignment is saved (Cancel returns to the candidates).', hl:[HL.flash,'#main tr.sel'], f(){ ACT.rosWarnOk(); }}]},
+ {uc:'UC-04 Build Weekly Roster', id:'uc04-9a', k:'Alt 9a', t:'Ambulance made unavailable after assignment', steps:[
+   {c:'On the fleet page the manager marks A03 unavailable for Tue 24 Nov Day, where the draft already uses it.', hl:HL.box('Mark A03 unavailable'), f(){ go('#/manager/fleet'); ACT.flUnav({no:'A03'}); $$('.fl-sh').forEach(x => { if(x.value===sid(PLAN[0],1,'D')) x.checked = true; }); }},
+   {c:'The system saves it and lists the affected assignments.', hl:[HL.flash,HL.note('Affected assignments')], f(){ ACT.flUnavSave(); }},
+   {c:'Back in roster management the system notifies the manager that the draft contains an invalid ambulance assignment.', hl:[HL.note('Invalid ambulance assignment'),'#main tr.sel'], f(){ ACT.rosOpen({slot:UI.fleet.affected.rows[0]}); }}]},
+
+ {uc:'UC-05 Publish Weekly Roster', id:'uc05-2a', k:'Alt 2a', t:'Fewer than six fully staffed ambulances: blocked', steps:[
+   {c:'Manager selects Publish on an incomplete draft; publication is prevented and the affected shift, missing role and shortfall are shown.', hl:HL.flash, f(){ openRoster(PLAN[0]); ACT.rosPublish(); }}]},
+ {uc:'UC-05 Publish Weekly Roster', id:'uc05-main', k:'Main', t:'Publish a complete roster', steps:[
+   {c:'(Via UC-04) the manager fills the last role requiring manpower in the draft.', hl:[HL.flash,'#main tr.sel'], f(){ toVacCands(); ACT.rosSelect({id:pickCand(false)}); }},
+   {c:'Manager selects Publish; every shift has at least six fully staffed and available ambulances, so the roster is marked published and logged.', hl:[HL.flash,'#main .bar .tag.dark'], f(){ ACT.rosPublish(); }},
+   {c:'Each assignment is now visible to the staff member assigned (staff view of the same week).', hl:{union:'#main .card'}, f(){ UI.sr.week = PLAN[0]; asStaff(me(),'roster'); }}]},
+
+ {uc:'UC-06 Amend Published Roster', id:'uc06-main', k:'Main', t:'Reassign a published job', steps:[
+   {c:'Manager selects an assignment in the published roster.', hl:HL.box('Slot '), f(){ openRoster(CUR,SAT_D,1); }},
+   {c:'Manager chooses Reassign; up to three suitable candidates are displayed.', hl:'#candPanel', f(){ ACT.rosReassign({slot:UI.ros.slot,pos:1}); }},
+   {c:'Manager selects a replacement; the rules pass and the system asks for a reason.', hl:HL.modal, f(){ ACT.rosSelect({id:pickCand(false)}); }},
+   {c:'Manager enters the reason; the change is saved and logged with previous value, new value, user, time and reason, and both staff are notified by SMS.', hl:[HL.flash,HL.pos(1)], f(){ $('#m-reason').value = 'Swap requested by staff member'; ACT.rosReasonOk(); }}]},
+ {uc:'UC-06 Amend Published Roster', id:'uc06-2a', k:'Alt 2a', t:'Remove without a replacement', steps:[
+   {c:'Manager chooses Remove on an assignment and is asked for a reason.', hl:HL.modal, f(){ openRoster(CUR,SAT_D,2); const s = slotById(UI.ros.slot).slot; ACT.rosRemovePub({slot:s.id,asg:positions(s)[2].asg.id}); }},
+   {c:'The change is saved and logged, the removed staff member is notified, the role becomes unassigned and the shortfall is flagged. The role can then be filled through Find standby replacement (UC-08).', hl:[HL.flash,HL.note('Shortfall flagged'),HL.rowOf('#main .box .need')], f(){ $('#m-reason').value = 'Staff member on medical leave'; ACT.rosReasonOk(); }}]},
+ {uc:'UC-06 Amend Published Roster', id:'uc06-3a', k:'Alt 3a', t:'No suitable candidate for reassignment', steps:[
+   {c:'Manager chooses Reassign for the driver on Sun 22 Nov Day; no suitable candidate exists, so the system says so and offers to leave the role unassigned.', hl:HL.flash, f(){ openRoster(CUR,SUN_D,0); ACT.rosReassign({slot:UI.ros.slot,pos:0}); }}]},
+ {uc:'UC-06 Amend Published Roster', id:'uc06-5a', k:'Alt 5a', t:'Replacement breaks an assignment rule', steps:[
+   {c:'Manager selects a staff member who is already assigned in the same shift; the system displays the rule that was broken.', hl:HL.flash, f(){ openRoster(CUR,SAT_D,1); ACT.rosReassign({slot:UI.ros.slot,pos:1}); const id = positions(shiftSlots(CUR,SAT_D)[2])[1].asg.staffId; addCand(id); render(); ACT.rosSelect({id}); }}]},
+ {uc:'UC-06 Amend Published Roster', id:'uc06-5b', k:'Alt 5b', t:'Replacement would exceed 40 hours', steps:[
+   {c:'Manager selects a replacement who would go over 40 hours; the system warns.', hl:HL.modal, f(){ openRoster(CUR,SAT_D,1); ACT.rosReassign({slot:UI.ros.slot,pos:1}); ACT.rosSelect({id:pickCand(true)}); }},
+   {c:'Manager confirms and continues to the reason (Cancel returns to the candidates).', hl:HL.modal, f(){ ACT.rosWarnOk(); }}]},
+
+ {uc:'UC-07 Reject Assignment', id:'uc07-main', k:'Main', t:'Reject an assigned job with a reason', steps:[
+   {c:'Staff member opens their roster.', f(){ UI.sr.week = CUR; asStaff(me(),'roster'); }},
+   {c:'Staff member selects Reject on an upcoming assignment; the system warns them to discuss the job with their manager first.', hl:HL.modal, f(){ ACT.srReject(mySlot(SAT_N)); }},
+   {c:'Staff member confirms and is asked for a reason.', hl:HL.modal, f(){ ACT.srRejectGo(mySlot(SAT_N)); }},
+   {c:'Staff member submits; the role becomes unassigned, the rejection and reason are logged and the manager is notified by SMS.', hl:HL.flash, f(){ $('#m-reason').value = 'Family emergency'; ACT.srRejectSubmit(); }}]},
+ {uc:'UC-07 Reject Assignment', id:'uc07-3a', k:'Alt 3a', t:'Cancel after the warning', steps:[
+   {c:'Staff member selects Reject and sees the warning.', hl:HL.modal, f(){ UI.sr.week = CUR; asStaff(me(),'roster'); ACT.srReject(mySlot(SAT_N)); }},
+   {c:'Staff member cancels; the assignment is unchanged.', hl:HL.flash, f(){ ACT.srRejectCancel(); }}]},
+ {uc:'UC-07 Reject Assignment', id:'uc07-4a', k:'Alt 4a', t:'No reason entered', steps:[
+   {c:'Staff member tries to submit without a reason; the rejection is not submitted until a reason is entered.', hl:'#modal .merr', f(){ UI.sr.week = CUR; asStaff(me(),'roster'); ACT.srRejectGo(mySlot(SAT_N)); ACT.srRejectSubmit(); }}]},
+ {uc:'UC-07 Reject Assignment', id:'uc07-5a', k:'Alt 5a', t:'Rejection leaves fewer than six ambulances', steps:[
+   {c:'Staff member rejects the Fri 20 Nov Night job, a shift with exactly six ambulances.', hl:HL.flash, f(){ UI.sr.week = CUR; asStaff(me(),'roster'); ACT.srRejectGo(mySlot(FRI_N)); $('#m-reason').value = 'Unwell'; ACT.srRejectSubmit(); }},
+   {c:'On the manager\'s roster the shortfall and the missing role are flagged.', hl:[HL.note('Shortfall flagged'),HL.rowOf('#main table.t .need')], f(){ openRoster(CUR,FRI_N); }}]},
+
+ {uc:'UC-08 Find Standby Replacement', id:'uc08-main', k:'Main', t:'Send a standby confirmation request', steps:[
+   {c:'(After a rejection, UC-07) the manager opens the slot with the unfilled role in the published roster.', hl:[HL.note('Shortfall flagged'),HL.rowOf('#main .box .need')], f(){ simVacancy(); }},
+   {c:'Manager selects the unfilled role; the system lists the eligible standby staff and shows up to three side by side.', hl:'#candPanel', f(){ const s = slotById(UI.ros.slot).slot; ACT.rosStandby({slot:s.id,pos:vacPos(s)}); }},
+   {c:'Manager selects a candidate; validation passes, the assignment is saved as pending, a confirmation request is sent by SMS and the role shows as awaiting confirmation.', hl:[HL.flash,HL.rowOf('#main .box .pend')], f(){ ACT.rosSelect({id:pickCand(false)}); }}]},
+ {uc:'UC-08 Find Standby Replacement', id:'uc08-1a', k:'Alt 1a', t:'Withdraw an unanswered request', steps:[
+   {c:'Manager opens a role that is still awaiting confirmation from an earlier request.', hl:HL.rowOf('#main .box .pend'), f(){ const s = pendSlot(); openRoster(CUR,s.shiftId,shiftSlots(CUR,s.shiftId).indexOf(s)); }},
+   {c:'Manager withdraws the request; the pending assignment is removed and logged, the staff member is notified and the eligible standby list is shown again.', hl:[HL.flash,'#candPanel'], f(){ const s = pendSlot(); ACT.rosWithdraw({slot:s.id,asg:s.asg.find(a => a.status==='pending').id}); }}]},
+ {uc:'UC-08 Find Standby Replacement', id:'uc08-2a', k:'Alt 2a', t:'No eligible standby staff', steps:[
+   {c:'(After UC-06 alt 2a) the driver role on Sun 22 Nov Day is unassigned and the shortfall is flagged.', hl:[HL.note('Shortfall flagged'),HL.rowOf('#main .box .need')], f(){ const s = shiftSlots(CUR,SUN_D)[0]; removePub(s.id,positions(s)[0].asg.id,'Staff member on medical leave'); openRoster(CUR,SUN_D,0); }},
+   {c:'Manager selects the unfilled role; no staff member is eligible, so the role stays unassigned and the shortfall stays flagged.', hl:HL.flash, f(){ ACT.rosStandby({slot:UI.ros.slot,pos:0}); }}]},
+ {uc:'UC-08 Find Standby Replacement', id:'uc08-5a', k:'Alt 5a', t:'Proposed assignment fails validation', steps:[
+   {c:'Manager has the eligible standby list open.', hl:'#candPanel', f(){ const s = simVacancy(); ACT.rosStandby({slot:s.id,pos:vacPos(s)}); }},
+   {c:'(Simulated) meanwhile the IT Administrator deactivates the first candidate. The manager selects that candidate; validation fails, no request is created and the reason is shown.', hl:HL.flash, f(){ const id = UI.ros.cand.shown[0]; deactivate(id,'Kelvin Ong (IT Administrator)'); ACT.rosSelect({id}); }}]},
+
+ {uc:'UC-09 View Own Roster', id:'uc09-main', k:'Main', t:'Weekly assignments and monthly hours', steps:[
+   {c:'Staff member opens their landing page and selects a roster week; their own assignments are shown with date, times, ambulance, station, role and incoming/outgoing crew, plus total hours for the calendar month.', hl:'#main .bar .box', f(){ UI.sr.week = CUR; asStaff(me(),'roster'); }}]},
+ {uc:'UC-09 View Own Roster', id:'uc09-2a', k:'Alt 2a', t:'No assignments in the selected week', steps:[
+   {c:'Staff member selects a week with no assignments; the system says there are none.', hl:HL.note('There are no assignments'), f(){ UI.sr.week = PLAN[1]; asStaff(me(),'roster'); }}]},
+ {uc:'UC-09 View Own Roster', id:'uc09-3a', k:'Alt 3a', t:'Monthly assignment view', steps:[
+   {c:'Staff member opens the monthly assignment view; all of their own shifts for the calendar month are shown without the team roster.', f(){ UI.mon.month = '2026-11'; asStaff(me(),'monthly'); }}]},
+
+ {uc:'UC-10 Review Staff Workload', id:'uc10-main', k:'Main', t:'Weekly hours, lowest three, over 40 h, monthly view', steps:[
+   {c:'Manager opens the landing page: assigned hours per staff member for the roster week, the three lowest, and everyone over 40 hours highlighted.', hl:'#main .cols .box', f(){ UI.dash.week = CUR; UI.dash.monthly = false; go('#/manager/dashboard'); }},
+   {c:'Manager selects the monthly view; total assigned hours per staff member for the calendar month are shown.', f(){ ACT.dashMonthly(); }}]},
+ {uc:'UC-10 Review Staff Workload', id:'uc10-3a', k:'Alt 3a', t:'Tie at third-lowest hours', steps:[
+   {c:'Several staff are tied at the third-lowest value, so all tied staff are included in the lowest-workload list.', hl:HL.box('Lowest workload'), f(){ UI.dash.week = PLAN[0]; UI.dash.monthly = false; go('#/manager/dashboard'); }}]},
+
+ {uc:'UC-11 View Ambulance Utilisation', id:'uc11-main', k:'Main', t:'Utilisation for a week or a day', steps:[
+   {c:'Manager opens the utilisation view and selects a week: utilisation per ambulance, fleet utilisation per shift and the slots requiring manpower with missing roles are shown.', f(){ UI.dash.uWeek = CUR; UI.dash.uDay = ''; go('#/manager/dashboard/utilisation'); }},
+   {c:'Manager selects a single day; the figures are recalculated for that day.', hl:'#main .bar', f(){ UI.dash.uDay = addDays(CUR,6); render(); }}]},
+ {uc:'UC-11 View Ambulance Utilisation', id:'uc11-4a', k:'Alt 4a', t:'No slot requires manpower', steps:[
+   {c:'For a period in which every slot is fully staffed the system says so.', hl:HL.flash, f(){ UI.dash.uWeek = HIST[2]; UI.dash.uDay = ''; go('#/manager/dashboard/utilisation'); }}]},
+
+ {uc:'UC-12 Manage Ambulance Record', id:'uc12-main', k:'Main / 3c', t:'Add an ambulance record', steps:[
+   {c:'Manager opens the fleet page; the ambulances they are responsible for are listed.', f(){ go('#/manager/fleet'); }},
+   {c:'Manager chooses to add an ambulance and enters the ambulance number.', hl:HL.box('Add ambulance'), f(){ ACT.flAdd(); $('#fl-no').value = 'A11'; }},
+   {c:'The system saves the record, logs it and updates the list of active ambulances.', hl:[HL.flash,HL.row('A11')], f(){ ACT.flSave(); }}]},
+ {uc:'UC-12 Manage Ambulance Record', id:'uc12-3d', k:'Alt 3d', t:'Edit, deactivate and reactivate', steps:[
+   {c:'Manager selects an existing record to edit and sets its availability.', hl:HL.box('Edit ambulance'), f(){ go('#/manager/fleet'); ACT.flEdit({no:'A09'}); $('#fl-active').checked = true; }},
+   {c:'The change is saved and logged; the ambulance is active again.', hl:[HL.flash,HL.row('A09')], f(){ ACT.flSave(); }},
+   {c:'Manager deactivates another ambulance from the list (it can be reactivated later).', hl:[HL.flash,HL.row('A08')], f(){ ACT.flToggle({no:'A08'}); }}]},
+ {uc:'UC-12 Manage Ambulance Record', id:'uc12-3a', k:'Alt 3a', t:'Mark unavailable for shifts (no staff assigned)', steps:[
+   {c:'Manager marks an ambulance unavailable for one or more roster shifts.', hl:HL.box('Mark A08 unavailable'), f(){ go('#/manager/fleet'); ACT.flUnav({no:'A08'}); $$('.fl-sh').forEach(x => { if(x.value===sid(PLAN[0],5,'D') || x.value===sid(PLAN[0],5,'N')) x.checked = true; }); }},
+   {c:'The unavailability is saved and logged, and the ambulance cannot be assigned to those shifts.', hl:[HL.flash,HL.row('A08')], f(){ ACT.flUnavSave(); }}]},
+ {uc:'UC-12 Manage Ambulance Record', id:'uc12-3b', k:'Alt 3b', t:'Mark unavailable where staff are already assigned', steps:[
+   {c:'Manager marks A02 unavailable for Sat 21 Nov Day, a shift in which it already has a crew.', hl:HL.box('Mark A02 unavailable'), f(){ go('#/manager/fleet'); ACT.flUnav({no:'A02'}); UI.fleet.unav.week = CUR; render(); $$('.fl-sh').forEach(x => { if(x.value===SAT_D) x.checked = true; }); }},
+   {c:'The change is saved and the affected assignments are displayed so the manager can amend them.', hl:[HL.flash,HL.note('Affected assignments')], f(){ ACT.flUnavSave(); }},
+   {c:'Opening the slot shows it flagged on the published roster, ready to be amended.', hl:[HL.note('Invalid ambulance assignment'),'#main tr.sel'], f(){ ACT.rosOpen({slot:UI.fleet.affected.rows[0]}); }}]},
+
+ {uc:'UC-13 Confirm Replacement Assignment', id:'uc13-main', k:'Main', t:'Confirm a replacement request', steps:[
+   {c:'Staff member sees a pending confirmation request on their roster page.', hl:HL.box('Pending confirmation requests'), f(){ UI.sr.week = CUR; asStaff(me(),'roster'); }},
+   {c:'Staff member opens the request; date, shift times, ambulance, station and role are shown.', hl:HL.modal, f(){ const s = pendSlot(); ACT.srOpenReq({slot:s.id,asg:s.asg.find(a => a.status==='pending').id}); }},
+   {c:'Staff member confirms; the vacancy is marked as filled and logged, the manager is notified and the assignment appears in the roster.', hl:[HL.flash,() => HL.card(fmtD(sDate(UI.sim)))()], f(){ const s = pendSlot(); UI.sim = s.shiftId; ACT.srConfirm({slot:s.id,asg:s.asg.find(a => a.status==='pending').id}); }}]},
+ {uc:'UC-13 Confirm Replacement Assignment', id:'uc13-3a', k:'Alt 3a', t:'Decline the request', steps:[
+   {c:'Staff member opens the pending request.', hl:HL.modal, f(){ UI.sr.week = CUR; asStaff(me(),'roster'); const s = pendSlot(); ACT.srOpenReq({slot:s.id,asg:s.asg.find(a => a.status==='pending').id}); }},
+   {c:'Staff member declines; the pending assignment is removed and logged, the vacancy stays unfilled and the manager is notified.', hl:HL.flash, f(){ const s = pendSlot(); ACT.srDecline({slot:s.id,asg:s.asg.find(a => a.status==='pending').id}); }}]}
+];
+
+function runScenario(id,upTo){ const sc = SC.find(x => x.id===id); seed(); const dr = UI ? UI.drawer : null; UI = freshUI(); UI.drawer = dr; UI.sc = id; UI.scStep = 0;
+  for(let i=0;i<=upTo && i<sc.steps.length;i++){ UI.flash = null; sc.steps[i].f(); UI.scStep = i; } render(); }
+ACT.scStart = ({id}) => { try{ runScenario(id,0); }catch(e){ console.error(e); flash('err','Scenario could not start: '+esc(e.message)); render(); } };
+ACT.scNext = ({id}) => { const sc = SC.find(x => x.id===id); if(UI.sc!==id) return ACT.scStart({id}); if(UI.scStep >= sc.steps.length-1) return render();
+  try{ sc.steps[UI.scStep+1].f(); UI.scStep++; }catch(e){ console.error(e); flash('err','This step needs the scenario to be restarted (press Start). '+esc(e.message)); } render(); };
+
+function drawerHtml(){
+  const d = UI.drawer; if(!d) return '';
+  const close = `<p style="float:right;margin:0">${btn('Close ✕','drawer',{d})}</p>`;
+  if(d==='sms') return close + `<h2>SMS Service outbox (simulated)</h2><p class="sm">Messages the system has handed to the external SMS Service. Not a page of the system.</p>
+    ${S.sms.map(m => `<div class="msg"><b>${esc(m.topic)}</b> → ${esc(m.name)} <small>${esc(m.contact)} · ${esc(m.t)}</small><br>${esc(m.text)}<br>${btn('View as recipient','smsView',{to:m.to})}</div>`).join('') || '<i>No messages.</i>'}`;
+  if(d==='audit') return close + `<h2>Audit log (simulated)</h2><p class="sm">Entries recorded by the system (NFR-07). Not a page of the system.</p>
+    ${S.audit.map(a => `<div class="msg"><b>${esc(a.action)}</b><br><small>${esc(a.t)} · ${esc(a.who)}</small><br>Previous: ${esc(a.prev)}<br>New: ${esc(a.next)}${a.reason!=='—' ? '<br>Reason: '+esc(a.reason) : ''}</div>`).join('') || '<i>No entries.</i>'}`;
+  let html = close + `<h2>Scenario guide</h2><p class="sm"><b>Start</b> resets the demo data and jumps to the first step of a scenario; <b>Next step</b> performs the following step for you. You can also click through the pages yourself at any time.</p>`, last = '';
+  SC.forEach(sc => { if(sc.uc!==last){ html += `<div class="uc">${sc.uc}</div>`; last = sc.uc; }
+    const on = UI.sc===sc.id, done = on && UI.scStep >= sc.steps.length-1;
+    html += `<div class="sc ${on?'on':''}">${tag(sc.k, sc.k.startsWith('Main')?'dark':'')} ${esc(sc.t)}<br>${btn('Start','scStart',{id:sc.id})}${on ? btn(done?'Finished':'Next step ▸','scNext',{id:sc.id},'pri',done)+` <small>step ${UI.scStep+1} of ${sc.steps.length}</small><div class="cap">${esc(sc.steps[UI.scStep].c)}</div>` : ''}</div>`; });
+  return html;
+}
+
+/* ---------- boot ---------- */
+seed(); UI = freshUI();
+(function boot(){
+  const q = new URLSearchParams(location.search);
+  if(q.get('selftest')){ const out = [];
+    SC.forEach(sc => { for(let i=0;i<sc.steps.length;i++){ try{ runScenario(sc.id,i); const m = $('#main').textContent; if(/undefined|NaN|\[object/.test(m)) out.push(sc.id+' step '+(i+1)+': suspicious text');
+      if(highlight(sc.steps[i].hl).length) out.push(sc.id+' step '+(i+1)+': highlight target not found'); highlight(); }catch(e){ out.push(sc.id+' step '+(i+1)+': '+e.message); break; } } });
+    document.title = out.length ? 'SELFTEST FAIL' : 'SELFTEST OK';
+    document.body.insertAdjacentHTML('beforeend','<pre id="selftest">'+esc(out.length ? out.join('\n') : 'ALL '+SC.length+' SCENARIOS OK')+'</pre>'); return; }
+  if(q.get('shot')){ document.body.classList.add('shot'); const step = +(q.get('step')||0); runScenario(q.get('shot'), step);
+    if(q.get('hl')!=='0') highlight((SC.find(x => x.id===q.get('shot')).steps[step]||{}).hl);   // add &hl=0 for a plain screenshot
+    const mb = $('#modal .mbox'); document.documentElement.dataset.h = Math.ceil(Math.max($('#app').getBoundingClientRect().bottom, mb ? mb.getBoundingClientRect().bottom+40 : 0) + window.scrollY + 14); return; }
+  if(!location.hash) location.hash = '#/manager/dashboard';
+  if(window.innerWidth > 1100) UI.drawer = 'guide';   // open the scenario guide by default on wide screens
+  render();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+
+# Python cache
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Office lock / temp files
+~$*
+*.tmp
+
+# Generated report files and screenshots (rebuilt locally)
+*.docx
+*.pdf
+screenshots/
