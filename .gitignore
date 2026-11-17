@@ -15,7 +15,6 @@ venv/
 ~$*
 *.tmp
 
-# Generated report files and screenshots (rebuilt locally)
+# Generated report files (rebuilt locally)
 *.docx
 *.pdf
-screenshots/
